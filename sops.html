@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GB Platform — SOPs Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gb-red: #C8102E;
+    --gb-red-soft: #FCE8EC;
+    --gb-dark: #1A1A1A;
+    --text: #2D2D2D;
+    --text-soft: #6B6B6B;
+    --text-faint: #9B9B9B;
+    --bg: #FAFAF8;
+    --card: #FFFFFF;
+    --border: #ECECE8;
+    --accent: #D4A857;
+    --green: #4A8F5E;
+    --green-soft: #E8F4EC;
+    --amber: #D97706;
+    --amber-soft: #FEF3E2;
+    --blue: #2563EB;
+    --blue-soft: #DBEAFE;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,0.10);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .app { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+  /* === SIDEBAR === */
+  .sidebar {
+    background: #FFFFFF;
+    border-right: 1px solid var(--border);
+    padding: 28px 16px;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    padding: 0 12px 32px; border-bottom: 1px solid var(--border); margin-bottom: 24px;
+  }
+  .logo-mark { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-mark img { width: 100%; height: 100%; display: block; object-fit: contain; }
+  .logo-text { font-weight: 700; font-size: 15px; letter-spacing: -0.3px; }
+  .logo-text span { color: var(--text-faint); font-weight: 400; }
+
+  .nav-section {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-faint); padding: 16px 12px 8px; font-weight: 600;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px; border-radius: 8px;
+    color: var(--text-soft); cursor: pointer;
+    font-size: 14px; font-weight: 500; transition: all 0.15s;
+  }
+  .nav-item:hover { background: var(--bg); color: var(--text); }
+  .nav-item.active { background: var(--gb-red-soft); color: var(--gb-red); font-weight: 600; }
+  .nav-item .icon { font-size: 16px; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .nav-item .icon svg { width: 18px; height: 18px; }
+
+  /* === MAIN === */
+  .main { padding: 40px 56px 80px; max-width: 1400px; }
+  .breadcrumb { font-size: 13px; color: var(--text-faint); margin-bottom: 12px; }
+  .breadcrumb span { color: var(--text); font-weight: 500; }
+  .page-header { margin-bottom: 28px; }
+  .page-title {
+    font-size: 32px; font-weight: 700; letter-spacing: -0.8px;
+    color: var(--gb-dark); margin-bottom: 6px;
+  }
+  .page-subtitle { font-size: 15px; color: var(--text-soft); max-width: 720px; }
+
+  /* === SOPS LAYOUT === */
+  .sops-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  /* === TREE NAV === */
+  .tree-nav {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 14px;
+    position: sticky;
+    top: 24px;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+  }
+  .tree-header {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-faint);
+    font-weight: 600;
+    padding: 4px 10px 10px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+
+  .tree-category { margin-bottom: 8px; }
+  .tree-category-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+    position: relative;
+  }
+  .tree-category-header:hover { background: var(--bg); }
+  .tree-category-header:hover .tree-action { opacity: 1; }
+  .tree-category-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gb-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    flex: 1;
+    outline: none;
+    cursor: pointer;
+    user-select: none;
+  }
+  .tree-category-name[contenteditable="true"] {
+    cursor: text;
+    user-select: text;
+    background: white;
+    border-radius: 4px;
+    padding: 1px 4px;
+    margin: -1px -4px;
+    box-shadow: inset 0 0 0 2px var(--gb-red);
+  }
+  .tree-toggle {
+    color: var(--text-faint);
+    font-size: 11px;
+    transition: transform 0.2s;
+    width: 14px;
+    text-align: center;
+  }
+  .tree-category.collapsed .tree-toggle { transform: rotate(-90deg); }
+  .tree-category.collapsed .tree-subcategories { display: none; }
+
+  .tree-subcategories {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 4px;
+    margin-left: 4px;
+    border-left: 1px solid var(--border);
+    padding-left: 8px;
+  }
+
+  .tree-sub {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+  }
+  .tree-sub:hover { background: var(--bg); }
+  .tree-sub:hover .tree-action { opacity: 1; }
+  .tree-sub.active {
+    background: var(--gb-red-soft);
+  }
+  .tree-sub.active .tree-sub-name { color: var(--gb-red); font-weight: 600; }
+  .tree-sub-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    outline: none;
+    cursor: pointer;
+    user-select: none;
+  }
+  .tree-sub-name[contenteditable="true"] {
+    cursor: text;
+    user-select: text;
+    background: white;
+    border-radius: 4px;
+    padding: 1px 4px;
+    margin: -1px -4px;
+    box-shadow: inset 0 0 0 2px var(--gb-red);
+    overflow: visible;
+    white-space: normal;
+  }
+  .tree-sub-count {
+    font-size: 11px;
+    color: var(--text-faint);
+    background: var(--bg);
+    padding: 1px 7px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+  .tree-sub.active .tree-sub-count {
+    background: white;
+    color: var(--gb-red);
+  }
+  .tree-action {
+    background: transparent;
+    border: none;
+    width: 20px; height: 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--text-faint);
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .tree-action:hover { background: white; color: var(--text); }
+  .tree-action.danger:hover { background: var(--gb-red-soft); color: var(--gb-red); }
+
+  .tree-add-btn {
+    background: transparent;
+    border: 1px dashed var(--border);
+    color: var(--text-soft);
+    padding: 6px 10px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    width: 100%;
+    text-align: left;
+    margin-top: 4px;
+    transition: all 0.15s;
+  }
+  .tree-add-btn:hover { color: var(--gb-red); border-color: var(--gb-red); border-style: solid; }
+
+  .tree-add-cat-btn {
+    background: var(--gb-red);
+    color: white;
+    border: none;
+    padding: 9px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    width: 100%;
+    margin-top: 12px;
+    transition: background 0.15s;
+  }
+  .tree-add-cat-btn:hover { background: #A50D26; }
+
+  /* === CONTENT === */
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .content-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    color: var(--gb-dark);
+  }
+  .content-title-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 4px;
+  }
+  .category-badge {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+    font-weight: 600;
+  }
+  .content-meta {
+    font-size: 13px;
+    color: var(--text-soft);
+  }
+  .add-sop-btn {
+    background: var(--gb-red); color: white;
+    border: none; padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+    transition: background 0.15s;
+  }
+  .add-sop-btn:hover { background: #A50D26; }
+
+  /* === SOP CARDS === */
+  .sops-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .sop-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 180px;
+    position: relative;
+  }
+  .sop-card:hover {
+    border-color: var(--text-soft);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .sop-card.draft { border-top: 3px solid var(--amber); }
+  .sop-card.published { border-top: 3px solid var(--green); }
+  .sop-card.outdated { border-top: 3px solid var(--gb-red); }
+  .sop-card.archive { border-top: 3px solid var(--text-soft); }
+
+  .sop-top {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .status-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 12px;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    width: fit-content;
+  }
+  .status-pill .dot { width: 5px; height: 5px; border-radius: 50%; }
+  .status-pill.draft { background: var(--amber-soft); color: var(--amber); }
+  .status-pill.draft .dot { background: var(--amber); }
+  .status-pill.published { background: var(--green-soft); color: var(--green); }
+  .status-pill.published .dot { background: var(--green); }
+  .status-pill.outdated { background: var(--gb-red-soft); color: var(--gb-red); }
+  .status-pill.outdated .dot { background: var(--gb-red); }
+  .status-pill.archive { background: var(--bg); color: var(--text-soft); border: 1px solid var(--border); }
+  .status-pill.archive .dot { background: var(--text-soft); }
+
+  .sop-card-content { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .sop-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--gb-dark);
+    letter-spacing: -0.2px;
+    line-height: 1.3;
+  }
+  .sop-desc {
+    font-size: 13px;
+    color: var(--text-soft);
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .sop-empty-desc {
+    font-size: 13px;
+    color: var(--text-faint);
+    font-style: italic;
+  }
+
+  .sop-bottom {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .sop-owner {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--text-soft);
+  }
+  .avatar {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .avatar.col-1 { background: #2C5282; }
+  .avatar.col-2 { background: #C8102E; }
+  .avatar.col-3 { background: #4A8F5E; }
+  .avatar.col-4 { background: #D4A857; }
+  .avatar.col-5 { background: #6B46C1; }
+  .avatar.col-6 { background: #0F766E; }
+
+  .sop-updated {
+    font-size: 11px;
+    color: var(--text-faint);
+    font-feature-settings: "tnum";
+  }
+
+  .sop-delete {
+    position: absolute; top: 12px; right: 12px;
+    background: transparent; border: none;
+    width: 24px; height: 24px; border-radius: 6px;
+    cursor: pointer; color: var(--text-faint); font-size: 14px;
+    opacity: 0; transition: opacity 0.15s;
+  }
+  .sop-card:hover .sop-delete { opacity: 1; }
+  .sop-delete:hover { background: var(--gb-red-soft); color: var(--gb-red); }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    color: var(--text-soft);
+    grid-column: 1 / -1;
+  }
+  .empty-state h3 { font-size: 18px; color: var(--text); margin-bottom: 8px; font-weight: 600; }
+  .empty-state p { font-size: 14px; max-width: 380px; margin: 0 auto 18px; }
+
+  /* === DRAWER === */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s; z-index: 50;
+  }
+  .overlay.open { opacity: 1; pointer-events: all; }
+  .drawer {
+    position: fixed; top: 0; right: 0;
+    width: 680px; max-width: 96vw; height: 100vh;
+    background: white; box-shadow: var(--shadow-lg);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 51; display: flex; flex-direction: column;
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-header {
+    padding: 22px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .drawer-tag {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--text-faint); font-weight: 600;
+  }
+  .drawer-actions { display: flex; gap: 6px; }
+  .drawer-btn {
+    background: transparent; border: none;
+    width: 32px; height: 32px; border-radius: 8px;
+    cursor: pointer; font-size: 16px; color: var(--text-soft);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .drawer-btn:hover { background: var(--bg); }
+  .drawer-btn.danger:hover { background: var(--gb-red-soft); color: var(--gb-red); }
+  .drawer-body { padding: 28px 32px; overflow-y: auto; flex: 1; }
+
+  [contenteditable="true"] {
+    outline: none; border-radius: 6px;
+    padding: 4px 8px; margin: -4px -8px;
+    transition: all 0.15s; cursor: text;
+  }
+  [contenteditable="true"]:hover { background: var(--bg); box-shadow: inset 0 0 0 1px var(--border); }
+  [contenteditable="true"]:focus { background: white; box-shadow: inset 0 0 0 2px var(--gb-red); }
+  [contenteditable="true"]:empty::before { content: attr(data-placeholder); color: var(--text-faint); }
+
+  .drawer-title {
+    font-size: 24px; font-weight: 700; letter-spacing: -0.5px;
+    color: var(--gb-dark); margin-bottom: 18px;
+    line-height: 1.3;
+  }
+
+  .form-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;
+    margin-bottom: 24px;
+  }
+  .form-field { display: flex; flex-direction: column; gap: 6px; }
+  .form-field.full { grid-column: 1 / -1; }
+  .field-label {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--text-faint); font-weight: 600;
+  }
+  .field-input {
+    font-size: 13px; color: var(--text); font-weight: 500;
+    padding: 8px 12px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 8px;
+    font-family: inherit; outline: none;
+    transition: all 0.15s;
+  }
+  .field-input:focus {
+    background: white; border-color: var(--gb-red);
+    box-shadow: 0 0 0 3px var(--gb-red-soft);
+  }
+  select.field-input { cursor: pointer; }
+
+  .drawer-section { margin-bottom: 26px; }
+  .drawer-section-title {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--text-faint); font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .description-area {
+    font-size: 14px; line-height: 1.6; color: var(--text);
+    min-height: 60px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .content-area {
+    font-size: 14px; line-height: 1.7; color: var(--text);
+    min-height: 280px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px 18px;
+    white-space: pre-wrap;
+  }
+  .content-area:empty::before {
+    content: attr(data-placeholder);
+    color: var(--text-faint);
+    font-style: italic;
+  }
+
+  .save-indicator {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--gb-dark); color: white;
+    padding: 10px 16px; border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    opacity: 0; transform: translateY(10px);
+    transition: all 0.3s; z-index: 100;
+    box-shadow: var(--shadow-lg);
+  }
+  .save-indicator.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark"><img src="gracie-barra-logo.png.png" alt="Gracie Barra"></div>
+      <div class="logo-text">Management <span>OS</span></div>
+    </div>
+
+    <div class="nav-section">School</div>
+    <div class="nav-item" onclick="location.href='dashboard.html'"><span class="icon">◐</span> Dashboard</div>
+    <div class="nav-item" onclick="location.href='vision.html'"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="15" r="4"/><circle cx="18" cy="15" r="4"/><path d="M6 11V7m12 4V7M8 7h8"/><path d="M10 15h4"/></svg></span> Vision</div>
+    <div class="nav-item" onclick="location.href='rocks.html'"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg></span> Rocks</div>
+    <div class="nav-item" onclick="location.href='metrics.html'"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14a10 10 0 0 1 20 0"/><path d="M12 14l5-3"/><circle cx="12" cy="14" r="1.5" fill="currentColor"/></svg></span> Metrics</div>
+    <div class="nav-item" onclick="location.href='todos.html'"><span class="icon">◯</span> To-Dos</div>
+    <div class="nav-item" onclick="location.href='issues.html'"><span class="icon">!</span> Issues</div>
+
+    <div class="nav-section">Knowledge</div>
+    <div class="nav-item active"><span class="icon">▤</span> SOPs Hub</div>
+    <div class="nav-item" onclick="location.href='swot.html'"><span class="icon">▥</span> SWOT Analysis</div>
+
+    <div class="nav-section">Rhythm</div>
+    <div class="nav-item" onclick="location.href='meetings.html'"><span class="icon">▶</span> Meetings</div>
+    <div class="nav-item"><span class="icon">★</span> Headlines</div>
+  </aside>
+
+  <main class="main">
+    <div class="breadcrumb">Knowledge <span>›</span> <span>SOPs Hub</span></div>
+    <div class="page-header">
+      <h1 class="page-title">SOPs Hub</h1>
+      <p class="page-subtitle">Every procedure documented, every team member empowered. Click any SOP to edit. Add categories, sub-categories, and SOPs as your school grows.</p>
+    </div>
+
+    <div class="sops-layout">
+      <!-- TREE NAV -->
+      <aside class="tree-nav">
+        <div class="tree-header">Categories</div>
+        <div id="tree"></div>
+        <button class="tree-add-cat-btn" onclick="addCategory()">+ New Category</button>
+      </aside>
+
+      <!-- CONTENT -->
+      <section class="content">
+        <div class="content-header">
+          <div>
+            <div class="content-title-row">
+              <span class="category-badge" id="contentBadge"></span>
+            </div>
+            <h2 class="content-title" id="contentTitle">Select a sub-category</h2>
+            <div class="content-meta" id="contentMeta"></div>
+          </div>
+          <button class="add-sop-btn" id="addSopBtn" onclick="addSop()" style="display:none;">+ New SOP</button>
+        </div>
+        <div class="sops-grid" id="sopsGrid"></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- DRAWER -->
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div class="drawer-tag" id="drawerTag">SOP</div>
+    <div class="drawer-actions">
+      <button class="drawer-btn danger" id="drawerDelete" title="Delete">🗑</button>
+      <button class="drawer-btn" onclick="closeDrawer()" title="Close">✕</button>
+    </div>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</aside>
+
+<div class="save-indicator" id="saveIndicator">✓ Saved</div>
+
+<script>
+  // === DEFAULT DATA ===
+  const DEFAULT_DATA = {
+    categories: [
+      {
+        id: 'cat-staff',
+        name: 'STAFF',
+        subcategories: [
+          {
+            id: 'sub-pd',
+            name: 'Program Director',
+            sops: [
+              { id: 'sop-pd-1', title: 'Phone Scripts', description: 'Scripts for inbound and outbound calls — trial booking, follow-up, member retention.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+              { id: 'sop-pd-2', title: 'WhatsApp Scripts', description: 'Templated messages for WhatsApp — trial confirmation, no-show follow-up, monthly check-in.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+              { id: 'sop-pd-3', title: 'Enrollment Workflow', description: 'Step-by-step process from first contact to active member: trial booking, paperwork, payment, mat introduction.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+              { id: 'sop-pd-4', title: 'Cancellation Workflow', description: 'How to handle cancellation requests with care: listen, retain, document, and process.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+              { id: 'sop-pd-5', title: 'Transfer Policy & Workflow', description: 'Inter-school transfers, suspension and reactivation, and member status changes.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' }
+            ]
+          },
+          {
+            id: 'sub-hp',
+            name: 'Head Professor',
+            sops: [
+              { id: 'sop-hp-1', title: 'Handle Situation of Sexual Harassment', description: 'Zero-tolerance protocol: immediate response, documentation, escalation, support for the affected student.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+              { id: 'sop-hp-2', title: 'Conflict Management', description: 'De-escalation, mediation between students or between students and staff, and follow-up.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+              { id: 'sop-hp-3', title: 'Safety and Ethics', description: 'Mat safety, ethical conduct expected from professors and students, GB code of conduct.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+              { id: 'sop-hp-4', title: 'Kids or Parents Want to Quit', description: 'How to listen, identify the real reason, address concerns, and offer pathways to stay engaged.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' }
+            ]
+          },
+          {
+            id: 'sub-ac',
+            name: 'Assistant Coach',
+            sops: [
+              { id: 'sop-ac-1', title: 'Greetings with a New Student', description: 'First-impression standards: welcome on the mat, introduce to peers, set them up for success in their first class.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+              { id: 'sop-ac-2', title: 'Assist an Intro Class', description: 'How to support the head professor during introductory classes: pair drilling, technique reps, safety watch.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' }
+            ]
+          }
+        ]
+      }
+    ]
+  };
+
+  const STORAGE_KEY = 'gb_sops_data_v1';
+
+  // === MIGRATION: adds new categories from EXTRA_CATEGORIES if not present ===
+  const EXTRA_CATEGORIES = [
+    {
+      id: 'cat-finance',
+      name: 'FINANCE & ADMIN',
+      subcategories: [
+        {
+          id: 'sub-finance',
+          name: 'Finance & Admin',
+          sops: [
+            { id: 'sop-fin-1', title: 'Cash handling at front desk', description: 'How cash is received, counted, secured, and reconciled at end of day.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-fin-2', title: 'Membership billing & payment retry', description: 'Automated billing cycle, retry logic for declined cards, member communication.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-fin-3', title: 'Late payment follow-up sequence', description: 'Day-by-day touchpoints when a payment fails — email, call, in-person.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-fin-4', title: 'Refund policy & process', description: 'When refunds are issued, by whom, and how they are processed.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-fin-5', title: 'Daily / weekly / monthly reporting', description: 'Standard reports for cash, revenue, attendance, and churn.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-fin-6', title: 'Bank reconciliation', description: 'Match school records to bank statements every week.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-fin-7', title: 'Insurance renewal & claims', description: 'Annual renewal calendar, who owns it, and how claims are filed.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-fin-8', title: 'Tax & compliance calendar', description: 'Key tax deadlines and recurring compliance obligations.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'cat-proshop',
+      name: 'PROSHOP',
+      subcategories: [
+        {
+          id: 'sub-proshop',
+          name: 'Proshop',
+          sops: [
+            { id: 'sop-pro-1', title: 'Inventory management & stocktake', description: 'How stock levels are tracked, monthly counts, and reorder thresholds.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-pro-2', title: 'Sales process at the counter', description: 'From product selection to payment to receipt.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-pro-3', title: 'Returns & exchanges', description: 'When returns are accepted, refund vs store credit, condition checks.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-pro-4', title: 'Stock receiving & quality check', description: 'How new shipments are unboxed, inspected, and shelved.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-pro-5', title: 'Pricing & promotions', description: 'How prices are set, when promotions run, and how they\'re tagged.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-pro-6', title: 'Display & merchandising', description: 'Visual standards for the Proshop floor.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-pro-7', title: 'End-of-month closing', description: 'Inventory count, sales reconciliation, and financial close.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'cat-safety',
+      name: 'SAFETY, ETHICS & PEOPLE',
+      subcategories: [
+        {
+          id: 'sub-safety',
+          name: 'Safety, Ethics & People',
+          sops: [
+            { id: 'sop-saf-1', title: 'Child protection & safeguarding', description: 'Standards and reporting flow to keep kids safe in the academy.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-saf-2', title: 'Staff background checks', description: 'Required checks for new hires before working with members.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-saf-3', title: 'Code of conduct (students & staff)', description: 'Behavioral standards on and off the mat for the whole community.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-saf-4', title: 'Disciplinary process', description: 'How violations are documented, addressed, and escalated.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-saf-5', title: 'Grievance procedure', description: 'How students or staff can raise complaints and how they\'re resolved.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-saf-6', title: 'First aid response & injury reporting', description: 'Immediate response on the mat, reporting form, and follow-up.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'cat-marketing',
+      name: 'MARKETING & COMMUNICATIONS',
+      subcategories: [
+        {
+          id: 'sub-marketing',
+          name: 'Marketing & Communications',
+          sops: [
+            { id: 'sop-mkt-1', title: 'Social media posting calendar', description: 'Weekly posting rhythm, content themes, and ownership.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-mkt-2', title: 'Content creation & approval flow', description: 'Who produces content, who reviews, who publishes.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-mkt-3', title: 'Email campaigns to members & prospects', description: 'Recurring email sends, list segmentation, and tone.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-mkt-4', title: 'Photography & filming on the mat (consent)', description: 'Consent forms, what\'s allowed, and how images are used.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-mkt-5', title: 'Brand guidelines (logos, colors, voice)', description: 'How Gracie Barra identity is applied locally.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-mkt-6', title: 'Reviews & testimonials handling', description: 'How we ask for reviews, respond to them, and feature them.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' },
+            { id: 'sop-mkt-7', title: 'Press & media inquiries', description: 'Who handles media requests and how responses are coordinated.', content: '', owner: 'Sebastien G.', ownerColor: 2, status: 'draft', updatedAt: '2026-05-21' }
+          ]
+        }
+      ]
+    }
+  ];
+
+  function migrateAddCategories() {
+    let changed = false;
+    EXTRA_CATEGORIES.forEach(extraCat => {
+      if (!data.categories.find(c => c.id === extraCat.id || c.name === extraCat.name)) {
+        data.categories.push(JSON.parse(JSON.stringify(extraCat)));
+        changed = true;
+      }
+    });
+    if (changed) saveData();
+  }
+
+  let data = loadData();
+  let activeSubId = null;
+  let collapsedCategories = new Set();
+  let currentEdit = null;
+
+  function loadData() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return JSON.parse(JSON.stringify(DEFAULT_DATA));
+  }
+  function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    showSaved();
+  }
+  function showSaved() {
+    const el = document.getElementById('saveIndicator');
+    el.classList.add('show');
+    clearTimeout(showSaved._t);
+    showSaved._t = setTimeout(() => el.classList.remove('show'), 1500);
+  }
+  function escapeHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  }
+  function initialsOf(name) { return String(name || '').split(/\s+/).map(w => w[0]).join('').slice(0,2).toUpperCase(); }
+  function today() { return new Date().toISOString().slice(0,10); }
+  function fmtDate(iso) {
+    if (!iso) return '';
+    return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  // === HELPERS ===
+  function findSub(subId) {
+    for (const cat of data.categories) {
+      const sub = cat.subcategories.find(s => s.id === subId);
+      if (sub) return { cat, sub };
+    }
+    return null;
+  }
+  function findSop(sopId) {
+    for (const cat of data.categories) {
+      for (const sub of cat.subcategories) {
+        const sop = sub.sops.find(s => s.id === sopId);
+        if (sop) return { cat, sub, sop };
+      }
+    }
+    return null;
+  }
+
+  // === RENDER TREE ===
+  function renderTree() {
+    const tree = document.getElementById('tree');
+    tree.innerHTML = data.categories.map(cat => {
+      const isCollapsed = collapsedCategories.has(cat.id);
+      return `
+        <div class="tree-category ${isCollapsed ? 'collapsed' : ''}" data-cat="${cat.id}">
+          <div class="tree-category-header" onclick="toggleCategory('${cat.id}')">
+            <div class="tree-toggle">▼</div>
+            <div class="tree-category-name" data-cat-id="${cat.id}" ondblclick="event.stopPropagation(); editCategoryName(this, '${cat.id}')" title="Click to expand · Double-click to rename">${escapeHtml(cat.name)}</div>
+            <button class="tree-action" onclick="event.stopPropagation(); editCategoryName(document.querySelector('[data-cat-id=&quot;${cat.id}&quot;]'), '${cat.id}')" title="Rename">✎</button>
+            <button class="tree-action danger" onclick="event.stopPropagation(); deleteCategory('${cat.id}')" title="Delete category">🗑</button>
+          </div>
+          <div class="tree-subcategories">
+            ${cat.subcategories.map(sub => `
+              <div class="tree-sub ${activeSubId === sub.id ? 'active' : ''}" onclick="selectSub('${sub.id}')">
+                <div class="tree-sub-name" data-sub-id="${sub.id}" ondblclick="event.stopPropagation(); editSubName(this, '${sub.id}')" title="Click to open · Double-click to rename">${escapeHtml(sub.name)}</div>
+                <span class="tree-sub-count">${sub.sops.length}</span>
+                <button class="tree-action" onclick="event.stopPropagation(); editSubName(document.querySelector('[data-sub-id=&quot;${sub.id}&quot;]'), '${sub.id}')" title="Rename">✎</button>
+                <button class="tree-action danger" onclick="event.stopPropagation(); deleteSub('${sub.id}')" title="Delete sub-category">🗑</button>
+              </div>
+            `).join('')}
+            <button class="tree-add-btn" onclick="event.stopPropagation(); addSub('${cat.id}')">+ Add sub-category</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function makeEditable(el, saveFn) {
+    const originalText = el.textContent;
+    el.setAttribute('contenteditable', 'true');
+    el.focus();
+    // Select all text inside
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+
+    const finish = (commit) => {
+      el.removeEventListener('blur', onBlur);
+      el.removeEventListener('keydown', onKey);
+      el.removeAttribute('contenteditable');
+      const newText = el.textContent.trim();
+      if (commit && newText && newText !== originalText) {
+        saveFn(newText);
+      } else {
+        el.textContent = originalText;
+      }
+    };
+    const onBlur = () => finish(true);
+    const onKey = (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); finish(true); }
+      else if (e.key === 'Escape') { finish(false); }
+    };
+    el.addEventListener('blur', onBlur);
+    el.addEventListener('keydown', onKey);
+  }
+
+  window.editCategoryName = (el, catId) => {
+    makeEditable(el, (newName) => renameCategory(catId, newName));
+  };
+  window.editSubName = (el, subId) => {
+    makeEditable(el, (newName) => renameSub(subId, newName));
+  };
+
+  window.toggleCategory = (id) => {
+    if (collapsedCategories.has(id)) collapsedCategories.delete(id);
+    else collapsedCategories.add(id);
+    renderTree();
+  };
+
+  // === RENDER CONTENT ===
+  function renderContent() {
+    const found = activeSubId ? findSub(activeSubId) : null;
+    const badge = document.getElementById('contentBadge');
+    const title = document.getElementById('contentTitle');
+    const meta = document.getElementById('contentMeta');
+    const addBtn = document.getElementById('addSopBtn');
+    const grid = document.getElementById('sopsGrid');
+
+    if (!found) {
+      badge.textContent = '';
+      title.textContent = 'Select a sub-category';
+      meta.textContent = 'Pick one from the left to view its SOPs.';
+      addBtn.style.display = 'none';
+      grid.innerHTML = `<div class="empty-state"><h3>No sub-category selected</h3><p>Click any sub-category in the left tree to see its SOPs.</p></div>`;
+      return;
+    }
+
+    const { cat, sub } = found;
+    badge.textContent = cat.name;
+    title.textContent = sub.name;
+    const published = sub.sops.filter(s => s.status === 'published').length;
+    const draft = sub.sops.filter(s => s.status === 'draft').length;
+    meta.textContent = `${sub.sops.length} SOP${sub.sops.length === 1 ? '' : 's'}${published ? ' · ' + published + ' published' : ''}${draft ? ' · ' + draft + ' draft' : ''}`;
+    addBtn.style.display = '';
+
+    if (sub.sops.length === 0) {
+      grid.innerHTML = `<div class="empty-state"><h3>No SOPs yet</h3><p>Add the first procedure for "${escapeHtml(sub.name)}".</p><button class="add-sop-btn" onclick="addSop()">+ New SOP</button></div>`;
+      return;
+    }
+
+    grid.innerHTML = sub.sops.map(sop => renderSopCard(sop)).join('');
+  }
+
+  function renderSopCard(sop) {
+    const statusText = sop.status === 'published' ? 'Published' : sop.status === 'draft' ? 'Draft' : sop.status === 'outdated' ? 'Outdated' : 'Archived';
+    return `
+      <div class="sop-card ${sop.status}" onclick="openSop('${sop.id}')">
+        <button class="sop-delete" onclick="event.stopPropagation(); deleteSop('${sop.id}')">✕</button>
+        <div class="sop-top">
+          <div class="status-pill ${sop.status}"><span class="dot"></span>${statusText}</div>
+        </div>
+        <div class="sop-card-content">
+          <div class="sop-title">${escapeHtml(sop.title)}</div>
+          ${sop.description
+            ? `<div class="sop-desc">${escapeHtml(sop.description)}</div>`
+            : `<div class="sop-empty-desc">No description yet — click to add details.</div>`
+          }
+        </div>
+        <div class="sop-bottom">
+          <div class="sop-owner">
+            <div class="avatar col-${sop.ownerColor || 1}">${initialsOf(sop.owner)}</div>
+            ${escapeHtml(sop.owner)}
+          </div>
+          <div class="sop-updated">Updated ${fmtDate(sop.updatedAt)}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderAll() {
+    renderTree();
+    renderContent();
+  }
+
+  // === SELECT ===
+  window.selectSub = (id) => {
+    activeSubId = id;
+    renderAll();
+  };
+
+  // === CATEGORY ACTIONS ===
+  window.addCategory = () => {
+    const name = prompt('Category name:');
+    if (!name || !name.trim()) return;
+    const newCat = {
+      id: 'cat-' + Date.now(),
+      name: name.trim(),
+      subcategories: []
+    };
+    data.categories.push(newCat);
+    saveData();
+    renderAll();
+  };
+
+  window.renameCategory = (id, newName) => {
+    const cat = data.categories.find(c => c.id === id);
+    if (!cat) return;
+    const trimmed = newName.trim();
+    if (!trimmed || cat.name === trimmed) return;
+    cat.name = trimmed;
+    saveData();
+    renderContent(); // refresh badge in content header
+  };
+
+  window.deleteCategory = (id) => {
+    const cat = data.categories.find(c => c.id === id);
+    if (!cat) return;
+    const totalSops = cat.subcategories.reduce((s, sub) => s + sub.sops.length, 0);
+    let msg = `Delete category "${cat.name}"?`;
+    if (totalSops > 0 || cat.subcategories.length > 0) {
+      msg += `\n\nThis will also delete ${cat.subcategories.length} sub-categor${cat.subcategories.length === 1 ? 'y' : 'ies'} and ${totalSops} SOP${totalSops === 1 ? '' : 's'}.`;
+    }
+    if (!confirm(msg)) return;
+    if (activeSubId && cat.subcategories.find(s => s.id === activeSubId)) activeSubId = null;
+    data.categories = data.categories.filter(c => c.id !== id);
+    saveData();
+    renderAll();
+  };
+
+  // === SUB-CATEGORY ACTIONS ===
+  window.addSub = (catId) => {
+    const cat = data.categories.find(c => c.id === catId);
+    if (!cat) return;
+    const name = prompt('Sub-category name:');
+    if (!name || !name.trim()) return;
+    const newSub = { id: 'sub-' + Date.now(), name: name.trim(), sops: [] };
+    cat.subcategories.push(newSub);
+    activeSubId = newSub.id;
+    saveData();
+    renderAll();
+  };
+
+  window.renameSub = (id, newName) => {
+    const found = findSub(id);
+    if (!found) return;
+    const trimmed = newName.trim();
+    if (!trimmed || found.sub.name === trimmed) return;
+    found.sub.name = trimmed;
+    saveData();
+    renderContent();
+  };
+
+  window.deleteSub = (id) => {
+    const found = findSub(id);
+    if (!found) return;
+    const { cat, sub } = found;
+    let msg = `Delete sub-category "${sub.name}"?`;
+    if (sub.sops.length > 0) msg += `\n\nThis will also delete ${sub.sops.length} SOP${sub.sops.length === 1 ? '' : 's'}.`;
+    if (!confirm(msg)) return;
+    if (activeSubId === id) activeSubId = null;
+    cat.subcategories = cat.subcategories.filter(s => s.id !== id);
+    saveData();
+    renderAll();
+  };
+
+  // === SOP ACTIONS ===
+  window.addSop = () => {
+    if (!activeSubId) return;
+    const found = findSub(activeSubId);
+    if (!found) return;
+    const newSop = {
+      id: 'sop-' + Date.now(),
+      title: 'New SOP',
+      description: '',
+      content: '',
+      owner: 'Sebastien G.',
+      ownerColor: 2,
+      status: 'draft',
+      updatedAt: today()
+    };
+    found.sub.sops.push(newSop);
+    saveData();
+    renderAll();
+    openSop(newSop.id);
+  };
+
+  window.deleteSop = (id) => {
+    if (!confirm('Delete this SOP?')) return;
+    const found = findSop(id);
+    if (!found) return;
+    found.sub.sops = found.sub.sops.filter(s => s.id !== id);
+    saveData();
+    renderAll();
+  };
+
+  // === DRAWER ===
+  window.openSop = (id) => {
+    const found = findSop(id);
+    if (!found) return;
+    currentEdit = id;
+    renderDrawer(found.sop, found.cat, found.sub);
+    document.getElementById('overlay').classList.add('open');
+    document.getElementById('drawer').classList.add('open');
+  };
+  window.closeDrawer = () => {
+    document.getElementById('overlay').classList.remove('open');
+    document.getElementById('drawer').classList.remove('open');
+    currentEdit = null;
+  };
+  function getCurrentSop() {
+    if (!currentEdit) return null;
+    const f = findSop(currentEdit);
+    return f ? f.sop : null;
+  }
+
+  function renderDrawer(sop, cat, sub) {
+    document.getElementById('drawerTag').textContent = `SOP · ${cat.name} · ${sub.name}`;
+
+    // Build move-to dropdown options
+    const moveOptions = data.categories.map(c =>
+      `<optgroup label="${escapeHtml(c.name)}">${c.subcategories.map(s =>
+        `<option value="${s.id}" ${s.id === sub.id ? 'selected' : ''}>${escapeHtml(s.name)}</option>`
+      ).join('')}</optgroup>`
+    ).join('');
+
+    document.getElementById('drawerBody').innerHTML = `
+      <h2 class="drawer-title" contenteditable="true" data-field="title" data-placeholder="SOP title">${escapeHtml(sop.title)}</h2>
+
+      <div class="form-grid">
+        <div class="form-field">
+          <span class="field-label">Owner</span>
+          <input class="field-input" data-field="owner" value="${escapeHtml(sop.owner)}" placeholder="Owner name">
+        </div>
+        <div class="form-field">
+          <span class="field-label">Status</span>
+          <select class="field-input" data-field="status">
+            <option value="draft" ${sop.status==='draft'?'selected':''}>Draft</option>
+            <option value="published" ${sop.status==='published'?'selected':''}>Published</option>
+            <option value="outdated" ${sop.status==='outdated'?'selected':''}>Outdated</option>
+            <option value="archive" ${sop.status==='archive'?'selected':''}>Archive</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <span class="field-label">Avatar color</span>
+          <select class="field-input" data-field="ownerColor">
+            <option value="1" ${sop.ownerColor==1?'selected':''}>Blue</option>
+            <option value="2" ${sop.ownerColor==2?'selected':''}>Red</option>
+            <option value="3" ${sop.ownerColor==3?'selected':''}>Green</option>
+            <option value="4" ${sop.ownerColor==4?'selected':''}>Gold</option>
+            <option value="5" ${sop.ownerColor==5?'selected':''}>Purple</option>
+            <option value="6" ${sop.ownerColor==6?'selected':''}>Teal</option>
+          </select>
+        </div>
+        <div class="form-field full">
+          <span class="field-label">Move to sub-category</span>
+          <select class="field-input" data-field="moveTo">${moveOptions}</select>
+        </div>
+      </div>
+
+      <div class="drawer-section">
+        <div class="drawer-section-title">Summary / description</div>
+        <div class="description-area" contenteditable="true" data-field="description" data-placeholder="A one-line summary of what this SOP covers...">${escapeHtml(sop.description || '')}</div>
+      </div>
+
+      <div class="drawer-section">
+        <div class="drawer-section-title">Full content</div>
+        <div class="content-area" contenteditable="true" data-field="content" data-placeholder="Write the procedure here — step by step. Add line breaks for readability.">${escapeHtml(sop.content || '')}</div>
+      </div>
+
+      <div style="font-size: 11px; color: var(--text-faint);">Last updated ${fmtDate(sop.updatedAt)}</div>
+    `;
+
+    const body = document.getElementById('drawerBody');
+    body.querySelectorAll('[contenteditable="true"]').forEach(el => {
+      el.addEventListener('blur', handleContentEdit);
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey && el.classList.contains('drawer-title')) {
+          e.preventDefault(); el.blur();
+        }
+      });
+    });
+    body.querySelectorAll('.field-input').forEach(el => {
+      el.addEventListener('change', handleFieldChange);
+      el.addEventListener('blur', handleFieldChange);
+    });
+
+    document.getElementById('drawerDelete').onclick = () => {
+      if (!confirm('Delete this SOP?')) return;
+      deleteSop(currentEdit);
+      closeDrawer();
+    };
+  }
+
+  function handleContentEdit(e) {
+    const el = e.target;
+    const sop = getCurrentSop(); if (!sop) return;
+    const field = el.dataset.field;
+    if (field) {
+      sop[field] = el.textContent.trim();
+      sop.updatedAt = today();
+      saveData();
+      renderContent();
+    }
+  }
+
+  function handleFieldChange(e) {
+    const el = e.target;
+    const sop = getCurrentSop(); if (!sop) return;
+    const field = el.dataset.field;
+    if (!field) return;
+
+    if (field === 'moveTo') {
+      const newSubId = el.value;
+      if (newSubId === findSop(sop.id).sub.id) return;
+      // remove from old sub, add to new
+      const oldFound = findSop(sop.id);
+      oldFound.sub.sops = oldFound.sub.sops.filter(s => s.id !== sop.id);
+      const newSub = findSub(newSubId);
+      if (newSub) newSub.sub.sops.push(sop);
+      sop.updatedAt = today();
+      saveData();
+      // Refresh active selection to the new sub
+      activeSubId = newSubId;
+      renderAll();
+      renderDrawer(sop, newSub.cat, newSub.sub);
+      return;
+    }
+
+    let val = el.value;
+    if (field === 'ownerColor') val = parseInt(val);
+    sop[field] = val;
+    sop.updatedAt = today();
+    saveData();
+    renderContent();
+    // Don't full re-render drawer to avoid losing focus, but update tag if status changed
+    if (field === 'status') {
+      const f = findSop(sop.id);
+      if (f) renderDrawer(sop, f.cat, f.sub);
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeDrawer();
+  });
+
+  // Run migration to add new categories if they don't exist
+  migrateAddCategories();
+
+  // Auto-select first sub on load
+  if (!activeSubId && data.categories.length > 0 && data.categories[0].subcategories.length > 0) {
+    activeSubId = data.categories[0].subcategories[0].id;
+  }
+
+  renderAll();
+</script>
+
+</body>
+</html>
