@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GB Platform — Issues</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gb-red: #C8102E;
+    --gb-red-soft: #FCE8EC;
+    --gb-dark: #1A1A1A;
+    --text: #2D2D2D;
+    --text-soft: #6B6B6B;
+    --text-faint: #9B9B9B;
+    --bg: #FAFAF8;
+    --card: #FFFFFF;
+    --border: #ECECE8;
+    --accent: #D4A857;
+    --green: #4A8F5E;
+    --green-soft: #E8F4EC;
+    --amber: #D97706;
+    --amber-soft: #FEF3E2;
+    --blue: #2563EB;
+    --blue-soft: #DBEAFE;
+    --purple: #6B46C1;
+    --purple-soft: #EDE9FE;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,0.10);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .app { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+  /* === SIDEBAR === */
+  .sidebar {
+    background: #FFFFFF;
+    border-right: 1px solid var(--border);
+    padding: 28px 16px;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    padding: 0 12px 32px; border-bottom: 1px solid var(--border); margin-bottom: 24px;
+  }
+  .logo-mark { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-mark img { width: 100%; height: 100%; display: block; object-fit: contain; }
+  .logo-text { font-weight: 700; font-size: 15px; letter-spacing: -0.3px; }
+  .logo-text span { color: var(--text-faint); font-weight: 400; }
+
+  .nav-section {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-faint); padding: 16px 12px 8px; font-weight: 600;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px; border-radius: 8px;
+    color: var(--text-soft); cursor: pointer;
+    font-size: 14px; font-weight: 500; transition: all 0.15s;
+  }
+  .nav-item:hover { background: var(--bg); color: var(--text); }
+  .nav-item.active { background: var(--gb-red-soft); color: var(--gb-red); font-weight: 600; }
+  .nav-item .icon { font-size: 16px; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .nav-item .icon svg { width: 18px; height: 18px; }
+
+  /* === MAIN === */
+  .main { padding: 40px 56px 80px; max-width: 1320px; }
+  .breadcrumb { font-size: 13px; color: var(--text-faint); margin-bottom: 12px; }
+  .breadcrumb span { color: var(--text); font-weight: 500; }
+  .page-header { margin-bottom: 28px; }
+  .page-title {
+    font-size: 32px; font-weight: 700; letter-spacing: -0.8px;
+    color: var(--gb-dark); margin-bottom: 6px;
+  }
+  .page-subtitle { font-size: 15px; color: var(--text-soft); max-width: 720px; }
+
+  /* === STATS === */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .stat-label {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--text-soft);
+    font-weight: 600; margin-bottom: 6px;
+  }
+  .stat-value {
+    font-size: 26px; font-weight: 700;
+    letter-spacing: -0.5px; color: var(--gb-dark); line-height: 1.1;
+  }
+  .stat-card.open .stat-value { color: var(--gb-red); }
+  .stat-card.discussing .stat-value { color: var(--amber); }
+  .stat-card.resolved .stat-value { color: var(--green); }
+  .stat-card.parked .stat-value { color: var(--text-soft); }
+  .stat-bar { height: 3px; background: var(--border); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+  .stat-bar-fill { height: 100%; border-radius: 2px; }
+
+  /* === TOOLBAR === */
+  .toolbar {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 18px;
+    gap: 12px; flex-wrap: wrap;
+  }
+  .filter-pills {
+    display: flex; gap: 4px;
+    background: white; border: 1px solid var(--border);
+    border-radius: 10px; padding: 4px;
+  }
+  .filter-pill {
+    background: transparent; border: none;
+    padding: 8px 14px; border-radius: 7px;
+    font-size: 13px; font-weight: 600;
+    color: var(--text-soft); cursor: pointer; font-family: inherit;
+    transition: all 0.15s;
+  }
+  .filter-pill:hover { color: var(--text); }
+  .filter-pill.active { background: var(--gb-dark); color: white; }
+  .filter-pill .count { margin-left: 6px; opacity: 0.7; font-weight: 500; font-size: 11px; }
+  .filter-select {
+    background: white; border: 1px solid var(--border);
+    padding: 8px 12px; border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    color: var(--text); cursor: pointer;
+    outline: none; font-family: inherit;
+  }
+  .add-issue-btn {
+    background: var(--gb-red); color: white; border: none;
+    padding: 10px 18px; border-radius: 8px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: background 0.15s;
+  }
+  .add-issue-btn:hover { background: #A50D26; }
+
+  /* === LIST HEADER === */
+  .list-header {
+    display: grid;
+    grid-template-columns: 90px 1fr 140px 150px 110px 80px 30px 30px;
+    gap: 14px;
+    padding: 10px 18px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-faint);
+    font-weight: 600;
+  }
+
+  /* === ISSUE ROWS === */
+  .issue-list { display: flex; flex-direction: column; gap: 6px; }
+  .issue-row {
+    display: grid;
+    grid-template-columns: 90px 1fr 140px 150px 110px 80px 30px 30px;
+    gap: 14px;
+    align-items: center;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .issue-row:hover { border-color: var(--text-soft); box-shadow: var(--shadow-md); }
+  .issue-row.resolved { opacity: 0.55; }
+  .issue-row.resolved .issue-title { text-decoration: line-through; color: var(--text-soft); }
+
+  .priority-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 12px;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    width: fit-content;
+  }
+  .priority-pill .dot { width: 5px; height: 5px; border-radius: 50%; }
+  .priority-pill.critical { background: var(--gb-red); color: white; }
+  .priority-pill.critical .dot { background: white; }
+  .priority-pill.high { background: var(--gb-red-soft); color: var(--gb-red); }
+  .priority-pill.high .dot { background: var(--gb-red); }
+  .priority-pill.medium { background: var(--amber-soft); color: var(--amber); }
+  .priority-pill.medium .dot { background: var(--amber); }
+  .priority-pill.low { background: var(--bg); color: var(--text-soft); border: 1px solid var(--border); }
+  .priority-pill.low .dot { background: var(--text-soft); }
+
+  .issue-title {
+    font-size: 14px; font-weight: 600;
+    color: var(--gb-dark); letter-spacing: -0.1px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  .category-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--bg);
+    padding: 4px 10px; border-radius: 6px;
+    font-size: 11px; font-weight: 600;
+    color: var(--text-soft);
+    width: fit-content;
+    border: 1px solid var(--border);
+  }
+  .category-tag.member-experience { background: var(--purple-soft); color: var(--purple); border-color: transparent; }
+  .category-tag.coaching { background: var(--gb-red-soft); color: var(--gb-red); border-color: transparent; }
+  .category-tag.operations { background: var(--blue-soft); color: var(--blue); border-color: transparent; }
+  .category-tag.people { background: var(--amber-soft); color: var(--amber); border-color: transparent; }
+  .category-tag.facility { background: #E8F4EC; color: var(--green); border-color: transparent; }
+  .category-tag.finance { background: #FEF3E2; color: var(--amber); border-color: transparent; }
+  .category-tag.marketing { background: var(--purple-soft); color: var(--purple); border-color: transparent; }
+  .category-tag.strategy { background: var(--bg); color: var(--text); border-color: var(--border); }
+
+  .owner-tag {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--text-soft);
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  .avatar {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .avatar.col-1 { background: #2C5282; }
+  .avatar.col-2 { background: #C8102E; }
+  .avatar.col-3 { background: #4A8F5E; }
+  .avatar.col-4 { background: #D4A857; }
+  .avatar.col-5 { background: #6B46C1; }
+  .avatar.col-6 { background: #0F766E; }
+
+  .status-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 12px;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    width: fit-content;
+  }
+  .status-pill .dot { width: 5px; height: 5px; border-radius: 50%; }
+  .status-pill.open { background: var(--gb-red-soft); color: var(--gb-red); }
+  .status-pill.open .dot { background: var(--gb-red); }
+  .status-pill.discussing { background: var(--amber-soft); color: var(--amber); }
+  .status-pill.discussing .dot { background: var(--amber); }
+  .status-pill.resolved { background: var(--green-soft); color: var(--green); }
+  .status-pill.resolved .dot { background: var(--green); }
+  .status-pill.parked { background: var(--bg); color: var(--text-soft); border: 1px solid var(--border); }
+  .status-pill.parked .dot { background: var(--text-soft); }
+
+  .todos-counter {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; color: var(--text-soft); font-weight: 500;
+  }
+  .todos-counter.has-items { color: var(--text); font-weight: 600; }
+
+  .delete-x {
+    background: transparent; border: none;
+    color: var(--text-faint); cursor: pointer;
+    font-size: 13px; width: 26px; height: 26px;
+    border-radius: 6px;
+    opacity: 0; transition: opacity 0.15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .issue-row:hover .delete-x { opacity: 1; }
+  .delete-x:hover { background: var(--gb-red-soft); color: var(--gb-red); }
+
+  .solve-btn {
+    background: transparent;
+    border: none;
+    color: var(--green);
+    cursor: pointer;
+    font-size: 14px;
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    opacity: 0.45;
+    transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .issue-row:hover .solve-btn { opacity: 1; }
+  .solve-btn:hover {
+    background: var(--green-soft);
+    transform: scale(1.1);
+  }
+  .solve-btn-placeholder {
+    /* keeps grid alignment when solve button is hidden (e.g. resolved issues) */
+  }
+
+  .drawer-solve-btn {
+    background: var(--green);
+    color: white;
+    border: none;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.15s;
+  }
+  .drawer-solve-btn:hover { background: #3D7A4E; }
+  .drawer-solve-btn:disabled {
+    background: var(--green-soft);
+    color: var(--green);
+    cursor: not-allowed;
+  }
+  .drawer-solve-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 14px 16px;
+    background: var(--green-soft);
+    border: 1px solid #B7D9C4;
+    border-radius: 10px;
+  }
+  .drawer-solve-row.is-resolved {
+    background: var(--bg);
+    border-color: var(--border);
+  }
+  .drawer-solve-hint {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text-soft);
+  }
+  .drawer-solve-hint strong { color: var(--text); font-weight: 600; }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    color: var(--text-soft);
+  }
+  .empty-state h3 { font-size: 18px; color: var(--text); margin-bottom: 8px; font-weight: 600; }
+  .empty-state p { font-size: 14px; max-width: 380px; margin: 0 auto 18px; }
+
+  /* === DRAWER === */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s; z-index: 50;
+  }
+  .overlay.open { opacity: 1; pointer-events: all; }
+
+  .drawer {
+    position: fixed; top: 0; right: 0;
+    width: 600px; max-width: 92vw; height: 100vh;
+    background: white; box-shadow: var(--shadow-lg);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 51; display: flex; flex-direction: column;
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-header {
+    padding: 22px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .drawer-tag {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--text-faint); font-weight: 600;
+  }
+  .drawer-actions { display: flex; gap: 6px; }
+  .drawer-btn {
+    background: transparent; border: none;
+    width: 32px; height: 32px; border-radius: 8px;
+    cursor: pointer; font-size: 16px; color: var(--text-soft);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .drawer-btn:hover { background: var(--bg); }
+  .drawer-btn.danger:hover { background: var(--gb-red-soft); color: var(--gb-red); }
+  .drawer-body { padding: 28px 32px; overflow-y: auto; flex: 1; }
+
+  [contenteditable="true"] {
+    outline: none; border-radius: 6px;
+    padding: 4px 8px; margin: -4px -8px;
+    transition: all 0.15s; cursor: text;
+  }
+  [contenteditable="true"]:hover {
+    background: var(--bg);
+    box-shadow: inset 0 0 0 1px var(--border);
+  }
+  [contenteditable="true"]:focus {
+    background: white;
+    box-shadow: inset 0 0 0 2px var(--gb-red);
+  }
+  [contenteditable="true"]:empty::before {
+    content: attr(data-placeholder); color: var(--text-faint);
+  }
+
+  .drawer-title {
+    font-size: 22px; font-weight: 700; letter-spacing: -0.4px;
+    color: var(--gb-dark); margin-bottom: 20px;
+    line-height: 1.3;
+  }
+
+  .form-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px;
+    margin-bottom: 24px;
+  }
+  .form-field { display: flex; flex-direction: column; gap: 6px; }
+  .form-field.full { grid-column: 1 / -1; }
+  .field-label {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--text-faint); font-weight: 600;
+  }
+  .field-input {
+    font-size: 13px; color: var(--text); font-weight: 500;
+    padding: 8px 12px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 8px;
+    font-family: inherit; outline: none;
+    transition: all 0.15s;
+  }
+  .field-input:hover { border-color: var(--text-soft); }
+  .field-input:focus {
+    background: white; border-color: var(--gb-red);
+    box-shadow: 0 0 0 3px var(--gb-red-soft);
+  }
+  select.field-input { cursor: pointer; }
+
+  .drawer-section { margin-bottom: 26px; }
+  .drawer-section-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+  }
+  .drawer-section-title {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--text-faint); font-weight: 600;
+  }
+  .add-btn {
+    background: transparent; border: 1px dashed var(--border);
+    color: var(--text-soft); padding: 5px 12px; border-radius: 6px;
+    font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit;
+  }
+  .add-btn:hover { color: var(--gb-red); border-color: var(--gb-red); border-style: solid; }
+
+  .description-area {
+    font-size: 14px; line-height: 1.6; color: var(--text);
+    min-height: 80px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 14px;
+  }
+
+  /* Linked to-dos */
+  .linked-todos-list { display: flex; flex-direction: column; gap: 6px; }
+  .linked-todo-empty {
+    font-size: 13px; color: var(--text-faint);
+    padding: 14px 16px; background: var(--bg);
+    border-radius: 8px; text-align: center;
+  }
+  .linked-todo-empty a { color: var(--gb-red); font-weight: 600; text-decoration: none; }
+  .linked-todo-empty a:hover { text-decoration: underline; }
+  .linked-todo-item {
+    display: grid;
+    grid-template-columns: 22px 1fr auto auto 22px;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 14px;
+    background: var(--bg);
+    border-radius: 8px;
+    transition: all 0.15s;
+  }
+  .linked-todo-item:hover { background: white; box-shadow: var(--shadow-sm); }
+  .linked-todo-item.done { opacity: 0.6; }
+  .linked-todo-item.done .lt-title { text-decoration: line-through; color: var(--text-faint); }
+  .lt-check {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: white;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .lt-check:hover { border-color: var(--green); }
+  .lt-check.done { background: var(--green); border-color: var(--green); }
+  .lt-title { font-size: 13px; font-weight: 500; color: var(--text); cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lt-title:hover { color: var(--gb-red); }
+  .lt-status {
+    font-size: 10px; font-weight: 700;
+    padding: 3px 8px; border-radius: 10px;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .lt-status.not-started { background: var(--bg); color: var(--text-soft); border: 1px solid var(--border); }
+  .lt-status.in-progress { background: var(--blue-soft); color: var(--blue); }
+  .lt-status.done { background: var(--green-soft); color: var(--green); }
+  .lt-status.blocked { background: var(--gb-red-soft); color: var(--gb-red); }
+  .lt-delete {
+    background: transparent; border: none;
+    width: 22px; height: 22px; border-radius: 4px;
+    cursor: pointer; color: var(--text-faint); font-size: 11px;
+    opacity: 0;
+  }
+  .linked-todo-item:hover .lt-delete { opacity: 1; }
+  .lt-delete:hover { background: var(--gb-red-soft); color: var(--gb-red); }
+  .sync-hint {
+    font-size: 11px; color: var(--text-faint);
+    margin-top: 8px; font-style: italic;
+  }
+  .sync-hint a { color: var(--gb-red); font-weight: 600; text-decoration: none; }
+  .sync-hint a:hover { text-decoration: underline; }
+
+  /* === ADD TO-DO MODAL === */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s; z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: white; border-radius: 16px;
+    width: 480px; max-width: 100%;
+    padding: 28px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    transform: translateY(10px);
+    transition: transform 0.2s;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 22px;
+  }
+  .modal-title {
+    font-size: 19px; font-weight: 700;
+    letter-spacing: -0.4px; color: var(--gb-dark);
+  }
+  .modal-close {
+    background: transparent; border: none;
+    width: 30px; height: 30px; border-radius: 8px;
+    cursor: pointer; font-size: 16px;
+    color: var(--text-soft);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-close:hover { background: var(--bg); }
+  .modal-form { display: flex; flex-direction: column; gap: 14px; }
+  .modal-field { display: flex; flex-direction: column; gap: 6px; }
+  .modal-field label {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--text-faint); font-weight: 600;
+  }
+  .modal-field input, .modal-field select {
+    padding: 10px 14px; border: 1px solid var(--border);
+    border-radius: 8px; font-size: 14px; font-family: inherit;
+    background: var(--bg); outline: none;
+    transition: all 0.15s; color: var(--text);
+  }
+  .modal-field input:focus, .modal-field select:focus {
+    background: white; border-color: var(--gb-red);
+    box-shadow: 0 0 0 3px var(--gb-red-soft);
+  }
+  .modal-actions {
+    display: flex; gap: 10px; justify-content: flex-end;
+    margin-top: 12px;
+  }
+  .modal-btn {
+    padding: 10px 18px; border-radius: 8px;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; font-family: inherit; border: none;
+    transition: all 0.15s;
+  }
+  .modal-btn.cancel {
+    background: transparent; color: var(--text-soft);
+    border: 1px solid var(--border);
+  }
+  .modal-btn.cancel:hover { background: var(--bg); color: var(--text); }
+  .modal-btn.save { background: var(--gb-red); color: white; }
+  .modal-btn.save:hover { background: #A50D26; }
+
+  /* === LINK EXISTING MODAL === */
+  .modal.wide { width: 620px; }
+  .link-search {
+    padding: 10px 14px; border: 1px solid var(--border);
+    border-radius: 8px; font-size: 14px; font-family: inherit;
+    background: var(--bg); outline: none; width: 100%;
+    margin-bottom: 14px;
+  }
+  .link-search:focus {
+    background: white; border-color: var(--gb-red);
+    box-shadow: 0 0 0 3px var(--gb-red-soft);
+  }
+  .link-todo-list {
+    max-height: 360px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    padding: 6px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .link-todo-item {
+    display: grid;
+    grid-template-columns: 24px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 12px;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .link-todo-item:hover { background: var(--gb-red-soft); }
+  .link-todo-item.selected { background: var(--gb-red-soft); box-shadow: inset 0 0 0 1px var(--gb-red); }
+  .link-todo-item.already-linked { opacity: 0.5; }
+  .link-todo-check {
+    width: 18px; height: 18px;
+    border-radius: 5px;
+    border: 2px solid var(--border);
+    background: white;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 10px; font-weight: 700;
+  }
+  .link-todo-item.selected .link-todo-check {
+    background: var(--gb-red); border-color: var(--gb-red);
+  }
+  .link-todo-title {
+    font-size: 13px; font-weight: 500;
+    color: var(--text);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .link-todo-meta {
+    font-size: 11px; color: var(--text-faint);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .link-todo-meta .ribbon {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-right: 6px;
+    color: white;
+  }
+  .link-todo-meta .ribbon.rock { background: var(--gb-red); }
+  .link-todo-meta .ribbon.milestone { background: var(--amber); }
+  .link-todo-meta .ribbon.goal { background: var(--green); }
+  .link-todo-meta .ribbon.issue { background: #6B46C1; }
+  .link-todo-meta .ribbon.none { background: var(--text-soft); }
+  .link-empty {
+    padding: 30px 20px;
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 13px;
+  }
+  .link-actions-info {
+    font-size: 12px;
+    color: var(--text-soft);
+    margin-top: 12px;
+    margin-bottom: 4px;
+  }
+
+  /* === SAVE & TOAST === */
+  .save-indicator {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--gb-dark); color: white;
+    padding: 10px 16px; border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    opacity: 0; transform: translateY(10px);
+    transition: all 0.3s; z-index: 100;
+    box-shadow: var(--shadow-lg);
+  }
+  .save-indicator.show { opacity: 1; transform: translateY(0); }
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translate(-50%, 12px);
+    background: var(--green); color: white;
+    padding: 12px 22px; border-radius: 10px;
+    font-size: 14px; font-weight: 600;
+    opacity: 0; transition: all 0.3s; z-index: 300;
+    box-shadow: 0 8px 22px rgba(74,143,94,0.35);
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .toast a {
+    color: white; text-decoration: underline;
+    margin-left: 10px; font-weight: 700;
+  }
+</style>
+<link rel="stylesheet" href="responsive.css">
+<script src="responsive.js" defer></script>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark"><img src="gracie-barra-logo.png.png" alt="Gracie Barra"></div>
+      <div class="logo-text">Management <span>OS</span></div>
+    </div>
+
+    <div class="nav-section">School</div>
+    <div class="nav-item" onclick="location.href='dashboard.html'"><span class="icon">◐</span> Dashboard</div>
+    <div class="nav-item" onclick="location.href='vision.html'"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="15" r="4"/><circle cx="18" cy="15" r="4"/><path d="M6 11V7m12 4V7M8 7h8"/><path d="M10 15h4"/></svg></span> Vision</div>
+    <div class="nav-item" onclick="location.href='rocks.html'"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg></span> Rocks</div>
+    <div class="nav-item" onclick="location.href='metrics.html'"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14a10 10 0 0 1 20 0"/><path d="M12 14l5-3"/><circle cx="12" cy="14" r="1.5" fill="currentColor"/></svg></span> Metrics</div>
+    <div class="nav-item" onclick="location.href='todos.html'"><span class="icon">◯</span> To-Dos</div>
+    <div class="nav-item active"><span class="icon">!</span> Issues</div>
+
+    <div class="nav-section">Knowledge</div>
+    <div class="nav-item" onclick="location.href='sops.html'"><span class="icon">▤</span> SOPs Hub</div>
+    <div class="nav-item" onclick="location.href='swot.html'"><span class="icon">▥</span> SWOT Analysis</div>
+
+    <div class="nav-section">Rhythm</div>
+    <div class="nav-item" onclick="location.href='meetings.html'"><span class="icon">▶</span> Meetings</div>
+    <div class="nav-item"><span class="icon">★</span> Headlines</div>
+
+    <div class="nav-section">Account</div>
+    <div class="nav-item" onclick="location.href=&#39;settings.html&#39;"><span class="icon">⚙</span> Settings</div>
+  </aside>
+
+  <main class="main">
+    <div class="breadcrumb">School <span>›</span> <span>Issues</span></div>
+    <div class="page-header">
+      <h1 class="page-title">Issues</h1>
+      <p class="page-subtitle">Identify, discuss, solve. Capture every friction point — then turn it into a clear next step or to-do.</p>
+    </div>
+
+    <div class="stats-bar" id="statsBar"></div>
+
+    <div class="toolbar">
+      <div class="filter-pills" id="filterPills"></div>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <select class="filter-select" id="priorityFilter" onchange="renderIssues()">
+          <option value="">All priorities</option>
+          <option value="critical">Critical</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+        <select class="filter-select" id="categoryFilter" onchange="renderIssues()">
+          <option value="">All categories</option>
+        </select>
+        <button class="add-issue-btn" onclick="addIssue()">+ New Issue</button>
+      </div>
+    </div>
+
+    <div class="list-header">
+      <div>Priority</div>
+      <div>Issue</div>
+      <div>Category</div>
+      <div>Owner</div>
+      <div>Status</div>
+      <div>To-Dos</div>
+      <div></div>
+      <div></div>
+    </div>
+
+    <div class="issue-list" id="issueList"></div>
+  </main>
+</div>
+
+<!-- DRAWER -->
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div class="drawer-tag" id="drawerTag">Issue</div>
+    <div class="drawer-actions">
+      <button class="drawer-btn danger" id="drawerDelete" title="Delete">🗑</button>
+      <button class="drawer-btn" onclick="closeDrawer()" title="Close">✕</button>
+    </div>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</aside>
+
+<!-- ADD TO-DO MODAL -->
+<div class="modal-overlay" id="addTodoModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add To-Do — linked to this issue</div>
+      <button class="modal-close" onclick="closeAddTodo()">✕</button>
+    </div>
+    <div class="modal-form">
+      <div class="modal-field">
+        <label>To-do title</label>
+        <input id="todoTitle" placeholder="What needs to be done to solve this?" autocomplete="off">
+      </div>
+      <div class="modal-field">
+        <label>Owner</label>
+        <input id="todoOwner" placeholder="Owner name" value="Sebastien G.">
+      </div>
+      <div class="modal-field">
+        <label>Due date</label>
+        <input id="todoDueDate" type="date">
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" onclick="closeAddTodo()">Cancel</button>
+        <button class="modal-btn save" onclick="saveTodoFromIssue()">+ Add To-Do</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="save-indicator" id="saveIndicator">✓ Saved</div>
+<div class="toast" id="toast"></div>
+
+<!-- LINK EXISTING TO-DOS MODAL -->
+<div class="modal-overlay" id="linkTodosModal">
+  <div class="modal wide">
+    <div class="modal-header">
+      <div class="modal-title">Link existing to-dos to this issue</div>
+      <button class="modal-close" onclick="closeLinkTodos()">✕</button>
+    </div>
+    <input type="text" class="link-search" id="linkSearch" placeholder="Search to-dos by title or owner..." oninput="renderLinkTodoList()">
+    <div class="link-todo-list" id="linkTodoList"></div>
+    <div class="link-actions-info" id="linkActionsInfo">Selecting a to-do will replace its current parent (Rock, Milestone, Goal) with this issue.</div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeLinkTodos()">Cancel</button>
+      <button class="modal-btn save" id="linkSaveBtn" onclick="saveLinkedTodos()">Link selected</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // === DEFAULT DATA ===
+  const DEFAULT_DATA = {
+    categories: ['Operations', 'People', 'Member Experience', 'Coaching', 'Facility', 'Finance', 'Marketing', 'Strategy', 'Other'],
+    issues: [
+      { id: 'i1', title: 'Trial-to-paying conversion dropped 5% in last 2 weeks', description: 'Front desk reports more trials but fewer sign-ups. Possibly an issue with the new trial sequence rollout or quality of leads. Need to investigate.', owner: 'Maria L.', ownerColor: 3, priority: 'high', status: 'open', category: 'Member Experience', createdAt: '2026-05-18' },
+      { id: 'i2', title: 'Kids coach hiring criteria not clearly defined', description: 'We are interviewing candidates but have no formal rubric. Risk of inconsistent decisions.', owner: 'Sebastien G.', ownerColor: 2, priority: 'medium', status: 'discussing', category: 'People', createdAt: '2026-05-15' },
+      { id: 'i3', title: 'Proshop inventory tracking is manual and error-prone', description: 'Maria spends 2-3 hours/week on inventory. Mistakes lead to stockouts and lost sales. Need a system.', owner: 'Maria L.', ownerColor: 3, priority: 'medium', status: 'open', category: 'Operations', createdAt: '2026-05-12' },
+      { id: 'i4', title: 'Brown belt promotion criteria not formalized', description: 'Five brown belts in the pipeline but no documented standard for what \"black belt ready\" looks like at GB. Risk of inconsistent promotions.', owner: 'Sebastien G.', ownerColor: 2, priority: 'high', status: 'discussing', category: 'Coaching', createdAt: '2026-05-10' },
+      { id: 'i5', title: 'Cancellation requests increasing in adult program', description: 'Three cancellations this week, all citing schedule conflicts. Need to investigate root cause — schedule, instruction, or other.', owner: 'Sebastien G.', ownerColor: 2, priority: 'high', status: 'open', category: 'Member Experience', createdAt: '2026-05-19' },
+      { id: 'i6', title: 'Insurance renewal terms unclear', description: 'Broker sent renewal package with significant premium increase. Need to review and possibly shop alternatives.', owner: 'Sebastien G.', ownerColor: 2, priority: 'medium', status: 'open', category: 'Finance', createdAt: '2026-05-17' },
+      { id: 'i7', title: 'Mat tape wearing out faster than expected', description: 'Replacing every 2 months instead of 4. Either lower-quality batch or higher traffic. Not urgent but worth investigating.', owner: 'Coach Julien', ownerColor: 4, priority: 'low', status: 'parked', category: 'Facility', createdAt: '2026-05-05' },
+      { id: 'i8', title: 'Saturday class attendance below 50% capacity', description: 'Three Saturday classes in a row under 12 students (capacity 24). Time slot? Instructor? Member preferences shifting?', owner: 'Coach Marco', ownerColor: 1, priority: 'medium', status: 'discussing', category: 'Coaching', createdAt: '2026-05-13' },
+      { id: 'i9', title: 'Social media engagement plateau', description: 'Instagram followers grew well in Q1 but flat in Q2. Engagement dropping. Time to refresh content strategy.', owner: 'Maria L.', ownerColor: 3, priority: 'low', status: 'parked', category: 'Marketing', createdAt: '2026-05-08' },
+      { id: 'i10', title: 'Long-term member left for competitor school', description: '5-year purple belt left citing \"lack of structured progression for advanced students\". Important signal. Resolved by launching brown belt pathway.', owner: 'Sebastien G.', ownerColor: 2, priority: 'high', status: 'resolved', category: 'Member Experience', createdAt: '2026-04-28', resolvedAt: '2026-05-12' }
+    ]
+  };
+
+  const STORAGE_KEY = 'gb_issues_data_v1';
+  const TODOS_KEY = 'gb_todos_data_v1';
+
+  let data = loadData();
+  let activeFilter = 'all';
+  let currentEdit = null;
+  let activeIssueIdForTodo = null;
+
+  function loadData() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return JSON.parse(JSON.stringify(DEFAULT_DATA));
+  }
+  function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    showSaved();
+  }
+  function showSaved() {
+    const el = document.getElementById('saveIndicator');
+    el.classList.add('show');
+    clearTimeout(showSaved._t);
+    showSaved._t = setTimeout(() => el.classList.remove('show'), 1500);
+  }
+  function escapeHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  }
+  function escapeAttr(s) { return String(s ?? '').replace(/"/g, '&quot;'); }
+  function initialsOf(name) { return String(name || '').split(/\s+/).map(w => w[0]).join('').slice(0,2).toUpperCase(); }
+
+  // === TODOS HELPERS ===
+  function loadTodos() {
+    try {
+      const raw = localStorage.getItem(TODOS_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return { todos: [] };
+  }
+  function saveTodos(td) {
+    localStorage.setItem(TODOS_KEY, JSON.stringify(td));
+  }
+  function getTodosForIssue(id) {
+    const td = loadTodos();
+    return (td.todos || []).filter(t => t.parent && t.parent.type === 'issue' && t.parent.id === id);
+  }
+  function inferOwnerColor(name) {
+    const map = { sebastien: 2, maria: 3, marco: 1, julien: 4 };
+    const lower = String(name || '').toLowerCase();
+    for (const k of Object.keys(map)) if (lower.includes(k)) return map[k];
+    return 5;
+  }
+
+  // === FILTERS ===
+  function getFilteredIssues() {
+    const priorityFilter = document.getElementById('priorityFilter')?.value || '';
+    const categoryFilter = document.getElementById('categoryFilter')?.value || '';
+
+    let issues = data.issues;
+    if (activeFilter !== 'all') issues = issues.filter(i => i.status === activeFilter);
+    if (priorityFilter) issues = issues.filter(i => i.priority === priorityFilter);
+    if (categoryFilter) issues = issues.filter(i => i.category === categoryFilter);
+
+    const statusOrder = { open: 0, discussing: 1, parked: 2, resolved: 3 };
+    const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+    return [...issues].sort((a, b) => {
+      const so = statusOrder[a.status] - statusOrder[b.status];
+      if (so !== 0) return so;
+      const po = priorityOrder[a.priority] - priorityOrder[b.priority];
+      if (po !== 0) return po;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+  }
+
+  function countByStatus(status) {
+    return data.issues.filter(i => i.status === status).length;
+  }
+
+  // === RENDER ===
+  function renderStats() {
+    const open = countByStatus('open');
+    const discussing = countByStatus('discussing');
+    const resolved = countByStatus('resolved');
+    const parked = countByStatus('parked');
+    const total = data.issues.length || 1;
+
+    document.getElementById('statsBar').innerHTML = `
+      <div class="stat-card open">
+        <div class="stat-label">Open</div>
+        <div class="stat-value">${open}</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="width:${(open/total)*100}%; background: var(--gb-red);"></div></div>
+      </div>
+      <div class="stat-card discussing">
+        <div class="stat-label">Discussing</div>
+        <div class="stat-value">${discussing}</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="width:${(discussing/total)*100}%; background: var(--amber);"></div></div>
+      </div>
+      <div class="stat-card resolved">
+        <div class="stat-label">Resolved</div>
+        <div class="stat-value">${resolved}</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="width:${(resolved/total)*100}%; background: var(--green);"></div></div>
+      </div>
+      <div class="stat-card parked">
+        <div class="stat-label">Parked</div>
+        <div class="stat-value">${parked}</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="width:${(parked/total)*100}%; background: var(--text-soft);"></div></div>
+      </div>
+    `;
+  }
+
+  function renderFilters() {
+    const filters = [
+      { id: 'all', label: 'All' },
+      { id: 'open', label: 'Open' },
+      { id: 'discussing', label: 'Discussing' },
+      { id: 'resolved', label: 'Resolved' },
+      { id: 'parked', label: 'Parked' }
+    ];
+    document.getElementById('filterPills').innerHTML = filters.map(f => {
+      const count = f.id === 'all' ? data.issues.length : countByStatus(f.id);
+      return `<button class="filter-pill ${activeFilter === f.id ? 'active' : ''}" onclick="setFilter('${f.id}')">${f.label}<span class="count">${count}</span></button>`;
+    }).join('');
+
+    // Categories dropdown
+    const cur = document.getElementById('categoryFilter').value;
+    document.getElementById('categoryFilter').innerHTML = '<option value="">All categories</option>' +
+      data.categories.map(c => `<option value="${escapeAttr(c)}" ${c === cur ? 'selected' : ''}>${escapeHtml(c)}</option>`).join('');
+  }
+  window.setFilter = (id) => { activeFilter = id; renderAll(); };
+
+  function categorySlug(cat) {
+    return String(cat || '').toLowerCase().replace(/\s+/g, '-');
+  }
+
+  function renderIssues() {
+    const issues = getFilteredIssues();
+    const list = document.getElementById('issueList');
+
+    if (issues.length === 0) {
+      list.innerHTML = `<div class="empty-state">
+        <h3>No issues to show</h3>
+        <p>Either no issues exist for this filter or you're caught up. Add one when something comes up.</p>
+        <button class="add-issue-btn" onclick="addIssue()">+ New Issue</button>
+      </div>`;
+      return;
+    }
+
+    list.innerHTML = issues.map(i => renderIssueRow(i)).join('');
+  }
+
+  function renderIssueRow(issue) {
+    const priorityText = issue.priority.charAt(0).toUpperCase() + issue.priority.slice(1);
+    const statusText = issue.status === 'open' ? 'Open' : issue.status === 'discussing' ? 'Discussing' : issue.status === 'resolved' ? 'Resolved' : 'Parked';
+    const todos = getTodosForIssue(issue.id);
+    const todosCount = todos.length;
+    const doneCount = todos.filter(t => t.status === 'done').length;
+
+    const solveBtn = issue.status === 'resolved'
+      ? `<div class="solve-btn-placeholder"></div>`
+      : `<button class="solve-btn" onclick="event.stopPropagation(); solveIssue('${issue.id}')" title="Mark as solved">✓</button>`;
+
+    return `
+      <div class="issue-row ${issue.status === 'resolved' ? 'resolved' : ''}" onclick="openIssue('${issue.id}')">
+        <div class="priority-pill ${issue.priority}"><span class="dot"></span>${priorityText}</div>
+        <div class="issue-title" title="${escapeAttr(issue.title)}">${escapeHtml(issue.title)}</div>
+        <div class="category-tag ${categorySlug(issue.category)}">${escapeHtml(issue.category)}</div>
+        <div class="owner-tag">
+          <div class="avatar col-${issue.ownerColor || 1}">${initialsOf(issue.owner)}</div>
+          ${escapeHtml(issue.owner)}
+        </div>
+        <div class="status-pill ${issue.status}"><span class="dot"></span>${statusText}</div>
+        <div class="todos-counter ${todosCount > 0 ? 'has-items' : ''}">↪ ${doneCount}/${todosCount}</div>
+        ${solveBtn}
+        <button class="delete-x" onclick="event.stopPropagation(); deleteIssue('${issue.id}')">✕</button>
+      </div>
+    `;
+  }
+
+  function renderAll() {
+    renderStats();
+    renderFilters();
+    renderIssues();
+  }
+
+  // === DRAWER ===
+  window.openIssue = (id) => {
+    const issue = data.issues.find(i => i.id === id);
+    if (!issue) return;
+    currentEdit = id;
+    renderDrawer(issue);
+    document.getElementById('overlay').classList.add('open');
+    document.getElementById('drawer').classList.add('open');
+  };
+  window.closeDrawer = () => {
+    document.getElementById('overlay').classList.remove('open');
+    document.getElementById('drawer').classList.remove('open');
+    currentEdit = null;
+  };
+  function getCurrentIssue() { return data.issues.find(i => i.id === currentEdit); }
+
+  function renderDrawer(issue) {
+    document.getElementById('drawerTag').textContent = 'Issue · ' + issue.category;
+    const linkedTodos = getTodosForIssue(issue.id);
+
+    const body = document.getElementById('drawerBody');
+    const isResolved = issue.status === 'resolved';
+    const todosOpen = linkedTodos.filter(t => t.status !== 'done').length;
+    const solveRow = isResolved
+      ? `<div class="drawer-solve-row is-resolved">
+          <div class="drawer-solve-hint"><strong>✓ Resolved</strong>${issue.resolvedAt ? ' on ' + issue.resolvedAt : ''} — re-open via the Status field below if needed.</div>
+        </div>`
+      : `<div class="drawer-solve-row">
+          <div class="drawer-solve-hint">${todosOpen > 0 ? `<strong>${todosOpen} to-do${todosOpen === 1 ? '' : 's'} still open</strong> — solving this issue won't close them. ` : ''}Ready to close this out?</div>
+          <button class="drawer-solve-btn" onclick="solveIssue('${issue.id}')">✓ Mark as Solved</button>
+        </div>`;
+
+    body.innerHTML = `
+      <h2 class="drawer-title" contenteditable="true" data-field="title" data-placeholder="Issue title">${escapeHtml(issue.title)}</h2>
+
+      ${solveRow}
+
+      <div class="form-grid">
+        <div class="form-field">
+          <span class="field-label">Owner</span>
+          <input class="field-input" data-field="owner" value="${escapeAttr(issue.owner)}" placeholder="Owner name">
+        </div>
+        <div class="form-field">
+          <span class="field-label">Status</span>
+          <select class="field-input" data-field="status">
+            <option value="open" ${issue.status==='open'?'selected':''}>Open</option>
+            <option value="discussing" ${issue.status==='discussing'?'selected':''}>Discussing (IDS)</option>
+            <option value="resolved" ${issue.status==='resolved'?'selected':''}>Resolved</option>
+            <option value="parked" ${issue.status==='parked'?'selected':''}>Parked</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <span class="field-label">Priority</span>
+          <select class="field-input" data-field="priority">
+            <option value="critical" ${issue.priority==='critical'?'selected':''}>Critical</option>
+            <option value="high" ${issue.priority==='high'?'selected':''}>High</option>
+            <option value="medium" ${issue.priority==='medium'?'selected':''}>Medium</option>
+            <option value="low" ${issue.priority==='low'?'selected':''}>Low</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <span class="field-label">Category</span>
+          <select class="field-input" data-field="category">
+            ${data.categories.map(c => `<option value="${escapeAttr(c)}" ${issue.category === c ? 'selected' : ''}>${escapeHtml(c)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-field">
+          <span class="field-label">Avatar color</span>
+          <select class="field-input" data-field="ownerColor">
+            <option value="1" ${issue.ownerColor==1?'selected':''}>Blue</option>
+            <option value="2" ${issue.ownerColor==2?'selected':''}>Red</option>
+            <option value="3" ${issue.ownerColor==3?'selected':''}>Green</option>
+            <option value="4" ${issue.ownerColor==4?'selected':''}>Gold</option>
+            <option value="5" ${issue.ownerColor==5?'selected':''}>Purple</option>
+            <option value="6" ${issue.ownerColor==6?'selected':''}>Teal</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <span class="field-label">Created</span>
+          <input class="field-input" data-field="createdAt" type="date" value="${issue.createdAt || ''}">
+        </div>
+      </div>
+
+      <div class="drawer-section">
+        <div class="drawer-section-header">
+          <div class="drawer-section-title">Description / Notes (Identify · Discuss · Solve)</div>
+        </div>
+        <div class="description-area" contenteditable="true" data-field="description" data-placeholder="What's the issue? What's the root cause? What does solving it look like?">${escapeHtml(issue.description || '')}</div>
+      </div>
+
+      <div class="drawer-section">
+        <div class="drawer-section-header">
+          <div class="drawer-section-title">Linked To-Dos · ${linkedTodos.length}</div>
+          <div style="display:flex; gap:6px;">
+            <button class="add-btn" onclick="openLinkTodos('${issue.id}')">↗ Link existing</button>
+            <button class="add-btn" onclick="openAddTodo('${issue.id}')">+ Add to-do</button>
+          </div>
+        </div>
+        ${linkedTodos.length === 0
+          ? `<div class="linked-todo-empty">No to-dos yet. <a href="#" onclick="openAddTodo('${issue.id}'); return false;">Add the first action item</a> to turn this issue into progress.</div>`
+          : `<div class="linked-todos-list">
+              ${linkedTodos.map(t => renderLinkedTodo(t)).join('')}
+            </div>`
+        }
+        <div class="sync-hint">Synced with <a href="todos.html">To-Dos page</a> — check items here or there, both stay in sync.</div>
+      </div>
+    `;
+
+    body.querySelectorAll('[contenteditable="true"]').forEach(el => {
+      el.addEventListener('blur', handleContentEdit);
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey && !el.classList.contains('description-area')) {
+          e.preventDefault(); el.blur();
+        }
+      });
+    });
+    body.querySelectorAll('.field-input').forEach(el => {
+      el.addEventListener('change', handleFieldChange);
+      el.addEventListener('blur', handleFieldChange);
+    });
+
+    document.getElementById('drawerDelete').onclick = () => {
+      if (!confirm('Delete this issue? Linked to-dos will remain in the To-Dos page (unlinked).')) return;
+      deleteIssue(currentEdit);
+      closeDrawer();
+    };
+  }
+
+  function renderLinkedTodo(t) {
+    const statusText = { 'not-started': 'Not Started', 'in-progress': 'In Progress', 'done': 'Done', 'blocked': 'Blocked' }[t.status] || t.status;
+    return `
+      <div class="linked-todo-item ${t.status === 'done' ? 'done' : ''}">
+        <div class="lt-check ${t.status === 'done' ? 'done' : ''}" onclick="toggleLinkedTodo('${t.id}')">${t.status === 'done' ? '✓' : ''}</div>
+        <div class="lt-title" title="${escapeAttr(t.title)}" onclick="location.href='todos.html'">${escapeHtml(t.title)}</div>
+        <div class="vt-owner" style="display:flex; align-items:center; gap:6px; font-size: 11px; color: var(--text-soft);">
+          <div class="avatar col-${t.ownerColor || 1}" style="width:22px;height:22px;font-size:9px;">${initialsOf(t.owner)}</div>
+        </div>
+        <div class="lt-status ${t.status}">${statusText}</div>
+        <button class="lt-delete" onclick="deleteLinkedTodo('${t.id}')" title="Delete">✕</button>
+      </div>
+    `;
+  }
+
+  window.toggleLinkedTodo = (id) => {
+    const td = loadTodos();
+    const t = (td.todos || []).find(x => x.id === id);
+    if (!t) return;
+    t.status = t.status === 'done' ? 'not-started' : 'done';
+    saveTodos(td);
+    const issue = getCurrentIssue();
+    if (issue) renderDrawer(issue);
+    renderIssues(); // refresh row counts
+  };
+
+  window.deleteLinkedTodo = (id) => {
+    if (!confirm('Delete this to-do? It will be removed from the To-Dos page too.')) return;
+    const td = loadTodos();
+    td.todos = (td.todos || []).filter(t => t.id !== id);
+    saveTodos(td);
+    const issue = getCurrentIssue();
+    if (issue) renderDrawer(issue);
+    renderIssues();
+    showToast('To-do removed', 'todos.html');
+  };
+
+  function handleContentEdit(e) {
+    const el = e.target;
+    const issue = getCurrentIssue(); if (!issue) return;
+    const field = el.dataset.field;
+    if (field) {
+      issue[field] = el.textContent.trim();
+      saveData();
+      renderAll();
+    }
+  }
+  function handleFieldChange(e) {
+    const el = e.target;
+    const issue = getCurrentIssue(); if (!issue) return;
+    const field = el.dataset.field;
+    if (!field) return;
+    let val = el.value;
+    if (field === 'ownerColor') val = parseInt(val);
+    issue[field] = val;
+    if (field === 'status' && val === 'resolved') {
+      issue.resolvedAt = new Date().toISOString().slice(0,10);
+    }
+    saveData();
+    renderAll();
+    renderDrawer(issue);
+  }
+
+  // === ACTIONS ===
+  window.addIssue = () => {
+    const newId = 'i' + Date.now();
+    const newIssue = {
+      id: newId,
+      title: 'New issue',
+      description: '',
+      owner: 'Sebastien G.',
+      ownerColor: 2,
+      priority: 'medium',
+      status: 'open',
+      category: data.categories[0],
+      createdAt: new Date().toISOString().slice(0,10)
+    };
+    data.issues.push(newIssue);
+    saveData();
+    renderAll();
+    openIssue(newId);
+  };
+  window.deleteIssue = (id) => {
+    if (!confirm('Delete this issue?')) return;
+    data.issues = data.issues.filter(i => i.id !== id);
+    saveData();
+    renderAll();
+  };
+
+  window.solveIssue = (id) => {
+    const issue = data.issues.find(i => i.id === id);
+    if (!issue || issue.status === 'resolved') return;
+    const prevStatus = issue.status;
+    issue.status = 'resolved';
+    issue.resolvedAt = new Date().toISOString().slice(0, 10);
+    saveData();
+    renderAll();
+    // refresh drawer if open and showing this issue
+    if (currentEdit === id) renderDrawer(issue);
+    showToastWithUndo('✓ Issue marked as solved', () => {
+      issue.status = prevStatus;
+      delete issue.resolvedAt;
+      saveData();
+      renderAll();
+      if (currentEdit === id) renderDrawer(issue);
+    });
+  };
+
+  function showToastWithUndo(message, undoFn) {
+    const toast = document.getElementById('toast');
+    const undoId = 'undo-' + Date.now();
+    toast.innerHTML = `${message} <a href="#" id="${undoId}">Undo</a>`;
+    toast.classList.add('show');
+    clearTimeout(showToast._t);
+    document.getElementById(undoId).onclick = (e) => {
+      e.preventDefault();
+      undoFn();
+      toast.classList.remove('show');
+    };
+    showToast._t = setTimeout(() => toast.classList.remove('show'), 6000);
+  }
+
+  // === ADD TO-DO MODAL ===
+  window.openAddTodo = (issueId) => {
+    activeIssueIdForTodo = issueId;
+    const titleInput = document.getElementById('todoTitle');
+    const ownerInput = document.getElementById('todoOwner');
+    const dateInput = document.getElementById('todoDueDate');
+
+    titleInput.value = '';
+    ownerInput.value = 'Sebastien G.';
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + 7);
+    dateInput.value = dueDate.toISOString().slice(0,10);
+
+    document.getElementById('addTodoModal').classList.add('open');
+    setTimeout(() => titleInput.focus(), 120);
+  };
+  window.closeAddTodo = () => {
+    document.getElementById('addTodoModal').classList.remove('open');
+  };
+  window.saveTodoFromIssue = () => {
+    const title = document.getElementById('todoTitle').value.trim();
+    if (!title) {
+      const t = document.getElementById('todoTitle');
+      t.style.borderColor = 'var(--gb-red)';
+      t.focus();
+      setTimeout(() => { t.style.borderColor = ''; }, 2000);
+      return;
+    }
+    const owner = document.getElementById('todoOwner').value.trim() || 'Unassigned';
+    const dueDate = document.getElementById('todoDueDate').value;
+
+    const td = loadTodos();
+    td.todos = td.todos || [];
+    td.todos.push({
+      id: 't' + Date.now(),
+      title,
+      desc: '',
+      owner,
+      ownerColor: inferOwnerColor(owner),
+      status: 'not-started',
+      dueDate,
+      parent: { type: 'issue', id: activeIssueIdForTodo },
+      createdAt: new Date().toISOString().slice(0,10)
+    });
+    saveTodos(td);
+
+    closeAddTodo();
+    showToast('✓ To-do added', 'todos.html');
+
+    // Refresh drawer + rows
+    const issue = getCurrentIssue();
+    if (issue && issue.id === activeIssueIdForTodo) renderDrawer(issue);
+    renderIssues();
+  };
+
+  function showToast(message, link) {
+    const toast = document.getElementById('toast');
+    toast.innerHTML = link ? `${message} <a href="${link}">View in To-Dos →</a>` : message;
+    toast.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => toast.classList.remove('show'), 4500);
+  }
+
+  // Modal backdrop close
+  document.getElementById('addTodoModal').addEventListener('click', e => {
+    if (e.target.id === 'addTodoModal') closeAddTodo();
+  });
+  document.getElementById('todoTitle').addEventListener('keydown', e => {
+    if (e.key === 'Enter') saveTodoFromIssue();
+  });
+
+  // === LINK EXISTING TO-DOS ===
+  let linkTargetIssueId = null;
+  let linkSelectedTodoIds = new Set();
+
+  window.openLinkTodos = (issueId) => {
+    linkTargetIssueId = issueId;
+    linkSelectedTodoIds = new Set();
+    document.getElementById('linkSearch').value = '';
+    renderLinkTodoList();
+    document.getElementById('linkTodosModal').classList.add('open');
+    setTimeout(() => document.getElementById('linkSearch').focus(), 120);
+  };
+
+  window.closeLinkTodos = () => {
+    document.getElementById('linkTodosModal').classList.remove('open');
+    linkTargetIssueId = null;
+    linkSelectedTodoIds = new Set();
+  };
+
+  window.renderLinkTodoList = () => {
+    const list = document.getElementById('linkTodoList');
+    const search = document.getElementById('linkSearch').value.trim().toLowerCase();
+
+    const td = loadTodos();
+    let todos = (td.todos || []).filter(t => {
+      // Exclude to-dos already linked to THIS issue
+      if (t.parent && t.parent.type === 'issue' && t.parent.id === linkTargetIssueId) return false;
+      // Exclude done to-dos
+      if (t.status === 'done') return false;
+      return true;
+    });
+
+    if (search) {
+      todos = todos.filter(t =>
+        t.title.toLowerCase().includes(search) ||
+        (t.owner || '').toLowerCase().includes(search)
+      );
+    }
+
+    // Sort: unassigned first, then by parent type, then by title
+    todos.sort((a, b) => {
+      const aNo = a.parent ? 1 : 0;
+      const bNo = b.parent ? 1 : 0;
+      if (aNo !== bNo) return aNo - bNo;
+      return (a.title || '').localeCompare(b.title || '');
+    });
+
+    if (todos.length === 0) {
+      list.innerHTML = `<div class="link-empty">No matching to-dos to link.</div>`;
+      updateLinkBtn();
+      return;
+    }
+
+    list.innerHTML = todos.map(t => {
+      const parentType = t.parent?.type || 'none';
+      const parentLabel = parentType === 'rock' ? 'Rock' : parentType === 'milestone' ? 'Milestone' : parentType === 'goal' ? 'Goal' : parentType === 'issue' ? 'Other Issue' : 'Unassigned';
+      const parent = t.parent ? getParentInfo(t.parent.type, t.parent.id) : null;
+      const parentName = parent?.title || '';
+      const isSelected = linkSelectedTodoIds.has(t.id);
+
+      return `
+        <div class="link-todo-item ${isSelected ? 'selected' : ''}" onclick="toggleLinkSelection('${t.id}')">
+          <div class="link-todo-check">${isSelected ? '✓' : ''}</div>
+          <div>
+            <div class="link-todo-title">${escapeHtml(t.title)}</div>
+            <div class="link-todo-meta">
+              <span class="ribbon ${parentType}">${parentLabel}</span>
+              ${parentName ? escapeHtml(parentName.length > 50 ? parentName.slice(0,50) + '…' : parentName) + ' · ' : ''}
+              ${escapeHtml(t.owner)}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    updateLinkBtn();
+  };
+
+  function getParentInfo(type, id) {
+    if (type === 'rock') {
+      // Read rocks from localStorage
+      try {
+        const raw = localStorage.getItem('gb_rocks_data_v1');
+        const data = raw ? JSON.parse(raw) : null;
+        if (data?.rocks) return data.rocks.find(r => r.id === id);
+      } catch (e) {}
+    } else if (type === 'milestone') {
+      try {
+        const raw = localStorage.getItem('gb_vision_data_v1');
+        const data = raw ? JSON.parse(raw) : null;
+        if (data?.milestones) return data.milestones.find(m => m.id === id);
+      } catch (e) {}
+    } else if (type === 'goal') {
+      try {
+        const raw = localStorage.getItem('gb_vision_data_v1');
+        const data = raw ? JSON.parse(raw) : null;
+        if (data?.goals) return data.goals.find(g => g.id === id);
+      } catch (e) {}
+    } else if (type === 'issue') {
+      return data.issues.find(i => i.id === id);
+    }
+    return null;
+  }
+
+  window.toggleLinkSelection = (todoId) => {
+    if (linkSelectedTodoIds.has(todoId)) linkSelectedTodoIds.delete(todoId);
+    else linkSelectedTodoIds.add(todoId);
+    renderLinkTodoList();
+  };
+
+  function updateLinkBtn() {
+    const btn = document.getElementById('linkSaveBtn');
+    const n = linkSelectedTodoIds.size;
+    btn.textContent = n === 0 ? 'Link selected' : `Link ${n} to-do${n === 1 ? '' : 's'}`;
+    btn.disabled = n === 0;
+    btn.style.opacity = n === 0 ? '0.5' : '1';
+    btn.style.cursor = n === 0 ? 'not-allowed' : 'pointer';
+  }
+
+  window.saveLinkedTodos = () => {
+    if (linkSelectedTodoIds.size === 0) return;
+    const td = loadTodos();
+    let linked = 0;
+    (td.todos || []).forEach(t => {
+      if (linkSelectedTodoIds.has(t.id)) {
+        t.parent = { type: 'issue', id: linkTargetIssueId };
+        linked++;
+      }
+    });
+    saveTodos(td);
+
+    closeLinkTodos();
+    showToast(`✓ ${linked} to-do${linked === 1 ? '' : 's'} linked`, 'todos.html');
+    const issue = getCurrentIssue();
+    if (issue) renderDrawer(issue);
+    renderIssues();
+  };
+
+  // Modal backdrop close
+  document.getElementById('linkTodosModal').addEventListener('click', e => {
+    if (e.target.id === 'linkTodosModal') closeLinkTodos();
+  });
+
+  // Cross-tab sync — if to-dos change in another tab, refresh
+  window.addEventListener('storage', e => {
+    if (e.key === TODOS_KEY) {
+      const issue = getCurrentIssue();
+      if (issue) renderDrawer(issue);
+      renderIssues();
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      closeDrawer();
+      closeAddTodo();
+    }
+  });
+
+  renderAll();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GB Platform — Settings</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gb-red: #C8102E;
+    --gb-red-soft: #FCE8EC;
+    --gb-dark: #1A1A1A;
+    --text: #2D2D2D;
+    --text-soft: #6B6B6B;
+    --text-faint: #9B9B9B;
+    --bg: #FAFAF8;
+    --card: #FFFFFF;
+    --border: #ECECE8;
+    --accent: #D4A857;
+    --green: #4A8F5E;
+    --green-soft: #E8F4EC;
+    --amber: #D97706;
+    --amber-soft: #FEF3E2;
+    --blue: #2563EB;
+    --blue-soft: #DBEAFE;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,0.10);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .app { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+  /* === SIDEBAR === */
+  .sidebar {
+    background: #FFFFFF;
+    border-right: 1px solid var(--border);
+    padding: 28px 16px;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    padding: 0 12px 32px; border-bottom: 1px solid var(--border); margin-bottom: 24px;
+  }
+  .logo-mark { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-mark img { width: 100%; height: 100%; display: block; object-fit: contain; }
+  .logo-text { font-weight: 700; font-size: 15px; letter-spacing: -0.3px; }
+  .logo-text span { color: var(--text-faint); font-weight: 400; }
+
+  .nav-section {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-faint); padding: 16px 12px 8px; font-weight: 600;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px; border-radius: 8px;
+    color: var(--text-soft); cursor: pointer;
+    font-size: 14px; font-weight: 500; transition: all 0.15s;
+  }
+  .nav-item:hover { background: var(--bg); color: var(--text); }
+  .nav-item.active { background: var(--gb-red-soft); color: var(--gb-red); font-weight: 600; }
+  .nav-item .icon { font-size: 16px; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .nav-item .icon svg { width: 18px; height: 18px; }
+
+  /* === MAIN === */
+  .main { padding: 40px 56px 80px; max-width: 960px; }
+  .breadcrumb { font-size: 13px; color: var(--text-faint); margin-bottom: 12px; }
+  .breadcrumb span { color: var(--text); font-weight: 500; }
+  .page-header { margin-bottom: 28px; }
+  .page-title {
+    font-size: 32px; font-weight: 700; letter-spacing: -0.8px;
+    color: var(--gb-dark); margin-bottom: 6px;
+  }
+  .page-subtitle { font-size: 15px; color: var(--text-soft); max-width: 720px; }
+
+  /* === SECTION CARDS === */
+  .section {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin-bottom: 22px;
+  }
+  .section-header {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 22px; padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-title {
+    font-size: 18px; font-weight: 700;
+    color: var(--gb-dark); letter-spacing: -0.3px;
+  }
+  .section-meta {
+    font-size: 13px; color: var(--text-soft);
+  }
+
+  /* === FORM FIELDS === */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 20px;
+  }
+  .form-field {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .form-field.full { grid-column: 1 / -1; }
+  .field-label {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--text-faint); font-weight: 600;
+  }
+  .field-input {
+    font-size: 14px; color: var(--text);
+    padding: 10px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.15s;
+  }
+  .field-input:hover { border-color: var(--text-soft); }
+  .field-input:focus {
+    background: white;
+    border-color: var(--gb-red);
+    box-shadow: 0 0 0 3px var(--gb-red-soft);
+  }
+  select.field-input { cursor: pointer; }
+  textarea.field-input {
+    min-height: 70px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+
+  /* === TEAM LIST === */
+  .team-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .team-row {
+    display: grid;
+    grid-template-columns: 56px 1fr 1fr 1fr 32px;
+    gap: 12px;
+    align-items: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    transition: all 0.15s;
+  }
+  .team-row:hover {
+    background: white;
+    border-color: var(--text-soft);
+  }
+
+  .avatar-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: transform 0.15s;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+  .avatar:hover { transform: scale(1.08); }
+  .avatar.col-1 { background-color: #2C5282; }
+  .avatar.col-2 { background-color: #C8102E; }
+  .avatar.col-3 { background-color: #4A8F5E; }
+  .avatar.col-4 { background-color: #D4A857; }
+  .avatar.col-5 { background-color: #6B46C1; }
+  .avatar.col-6 { background-color: #0F766E; }
+  .avatar.has-photo {
+    color: transparent;
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px var(--border);
+  }
+  .avatar.has-photo::after {
+    content: '📷';
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    background: white;
+    border-radius: 50%;
+    width: 14px; height: 14px;
+    font-size: 8px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 0 1px var(--border);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .avatar.has-photo:hover::after { opacity: 1; }
+
+  /* === BELT STRIP === */
+  .belt-strip {
+    width: 44px;
+    height: 11px;
+    border-radius: 2px;
+    cursor: pointer;
+    display: flex;
+    justify-content: flex-end;
+    align-items: stretch;
+    position: relative;
+    border: 1px solid rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: transform 0.15s;
+  }
+  .belt-strip:hover { transform: scale(1.08); }
+  .belt-strip.belt-white { background: #E8E8E8; }
+  .belt-strip.belt-blue { background: #1E5FB4; border-color: transparent; }
+  .belt-strip.belt-purple { background: #6A3AA1; border-color: transparent; }
+  .belt-strip.belt-brown { background: #7A4A1E; border-color: transparent; }
+  .belt-strip.belt-black { background: #1A1A1A; border-color: transparent; }
+  .belt-strip.belt-coral {
+    background: linear-gradient(90deg, #1A1A1A 0%, #1A1A1A 50%, #C8102E 50%, #C8102E 100%);
+    border-color: transparent;
+  }
+  .belt-strip.belt-red { background: #C8102E; border-color: transparent; }
+  .belt-strip.belt-none {
+    background: var(--bg);
+    border-style: dashed;
+    border-color: var(--border);
+  }
+
+  .belt-rank-bar {
+    width: 13px;
+    background: rgba(0,0,0,0.85);
+    margin-right: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    padding: 0 1px;
+    flex-shrink: 0;
+  }
+  .belt-strip.belt-black .belt-rank-bar,
+  .belt-strip.belt-coral .belt-rank-bar,
+  .belt-strip.belt-red .belt-rank-bar { background: #C8102E; }
+  .belt-strip.belt-white .belt-rank-bar { background: rgba(0,0,0,0.7); }
+  .belt-strip.belt-none .belt-rank-bar { display: none; }
+  .stripe {
+    width: 1.3px;
+    height: 65%;
+    background: white;
+    flex-shrink: 0;
+  }
+
+  /* === AVATAR / BELT POPOVERS === */
+  .editor-popover {
+    position: absolute;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    display: none;
+    box-shadow: var(--shadow-lg);
+    z-index: 30;
+    min-width: 240px;
+  }
+  .editor-popover.open { display: block; }
+  .editor-row {
+    margin-bottom: 12px;
+  }
+  .editor-row:last-child { margin-bottom: 0; }
+  .editor-row-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .editor-row-content {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .editor-btn {
+    background: var(--gb-red);
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .editor-btn:hover { background: #A50D26; }
+  .editor-btn.secondary {
+    background: transparent;
+    color: var(--text-soft);
+    border: 1px solid var(--border);
+  }
+  .editor-btn.secondary:hover {
+    background: var(--gb-red-soft);
+    color: var(--gb-red);
+    border-color: var(--gb-red);
+  }
+
+  .belt-option {
+    width: 32px;
+    height: 11px;
+    border-radius: 2px;
+    cursor: pointer;
+    border: 1px solid rgba(0,0,0,0.08);
+    transition: transform 0.15s;
+  }
+  .belt-option:hover { transform: scale(1.15); }
+  .belt-option.selected {
+    box-shadow: 0 0 0 2px var(--gb-red);
+    transform: scale(1.1);
+  }
+  .belt-option.belt-white { background: #E8E8E8; }
+  .belt-option.belt-blue { background: #1E5FB4; border-color: transparent; }
+  .belt-option.belt-purple { background: #6A3AA1; border-color: transparent; }
+  .belt-option.belt-brown { background: #7A4A1E; border-color: transparent; }
+  .belt-option.belt-black { background: #1A1A1A; border-color: transparent; }
+  .belt-option.belt-coral { background: linear-gradient(90deg, #1A1A1A 50%, #C8102E 50%); border-color: transparent; }
+  .belt-option.belt-red { background: #C8102E; border-color: transparent; }
+  .belt-option.belt-none {
+    background: var(--bg);
+    border-style: dashed;
+    border-color: var(--border);
+  }
+
+  .stripe-option {
+    width: 30px; height: 28px;
+    border: 1px solid var(--border);
+    background: white;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--text-soft);
+    font-family: inherit;
+  }
+  .stripe-option:hover { color: var(--text); border-color: var(--text-soft); }
+  .stripe-option.selected {
+    background: var(--gb-dark);
+    color: white;
+    border-color: var(--gb-dark);
+  }
+
+  .color-swatch {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px var(--border);
+    transition: transform 0.15s;
+  }
+  .color-swatch:hover { transform: scale(1.1); }
+  .color-swatch.selected { box-shadow: 0 0 0 2px var(--gb-red); }
+  .color-swatch.col-1 { background: #2C5282; }
+  .color-swatch.col-2 { background: #C8102E; }
+  .color-swatch.col-3 { background: #4A8F5E; }
+  .color-swatch.col-4 { background: #D4A857; }
+  .color-swatch.col-5 { background: #6B46C1; }
+  .color-swatch.col-6 { background: #0F766E; }
+
+  .team-input {
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+    width: 100%;
+    transition: all 0.15s;
+  }
+  .team-input:hover {
+    background: white;
+    border-color: var(--border);
+  }
+  .team-input:focus {
+    background: white;
+    border-color: var(--gb-red);
+    box-shadow: 0 0 0 3px var(--gb-red-soft);
+  }
+  .team-input.role-select {
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .delete-team {
+    background: transparent;
+    border: none;
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-faint);
+    font-size: 13px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .team-row:hover .delete-team { opacity: 1; }
+  .delete-team:hover { background: var(--gb-red-soft); color: var(--gb-red); }
+
+  .add-team-btn {
+    background: transparent;
+    border: 1px dashed var(--border);
+    color: var(--text-soft);
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    width: 100%;
+    transition: all 0.15s;
+  }
+  .add-team-btn:hover {
+    color: var(--gb-red);
+    border-color: var(--gb-red);
+    border-style: solid;
+  }
+
+  /* Color swatches now live inside .editor-popover (defined above) */
+
+  /* === SAVE === */
+  .save-indicator {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--gb-dark); color: white;
+    padding: 10px 16px; border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    opacity: 0; transform: translateY(10px);
+    transition: all 0.3s; z-index: 100;
+    box-shadow: var(--shadow-lg);
+  }
+  .save-indicator.show { opacity: 1; transform: translateY(0); }
+
+  .hint {
+    font-size: 12px;
+    color: var(--text-faint);
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  .danger-zone {
+    background: white;
+    border: 1px solid var(--gb-red-soft);
+    border-radius: 14px;
+    padding: 22px 28px;
+    margin-top: 32px;
+  }
+  .danger-zone .section-title { color: var(--gb-red); font-size: 14px; }
+  .danger-btn {
+    background: transparent;
+    border: 1px solid var(--gb-red);
+    color: var(--gb-red);
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 10px;
+  }
+  .danger-btn:hover { background: var(--gb-red); color: white; }
+</style>
+<link rel="stylesheet" href="responsive.css">
+<script src="responsive.js" defer></script>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark"><img src="gracie-barra-logo.png.png" alt="Gracie Barra"></div>
+      <div class="logo-text">Management <span>OS</span></div>
+    </div>
+
+    <div class="nav-section">School</div>
+    <div class="nav-item" onclick="location.href='dashboard.html'"><span class="icon">◐</span> Dashboard</div>
+    <div class="nav-item" onclick="location.href='vision.html'"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="15" r="4"/><circle cx="18" cy="15" r="4"/><path d="M6 11V7m12 4V7M8 7h8"/><path d="M10 15h4"/></svg></span> Vision</div>
+    <div class="nav-item" onclick="location.href='rocks.html'"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg></span> Rocks</div>
+    <div class="nav-item" onclick="location.href='metrics.html'"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14a10 10 0 0 1 20 0"/><path d="M12 14l5-3"/><circle cx="12" cy="14" r="1.5" fill="currentColor"/></svg></span> Metrics</div>
+    <div class="nav-item" onclick="location.href='todos.html'"><span class="icon">◯</span> To-Dos</div>
+    <div class="nav-item" onclick="location.href='issues.html'"><span class="icon">!</span> Issues</div>
+
+    <div class="nav-section">Knowledge</div>
+    <div class="nav-item" onclick="location.href='sops.html'"><span class="icon">▤</span> SOPs Hub</div>
+    <div class="nav-item" onclick="location.href='swot.html'"><span class="icon">▥</span> SWOT Analysis</div>
+
+    <div class="nav-section">Rhythm</div>
+    <div class="nav-item" onclick="location.href='meetings.html'"><span class="icon">▶</span> Meetings</div>
+    <div class="nav-item"><span class="icon">★</span> Headlines</div>
+
+    <div class="nav-section">Account</div>
+    <div class="nav-item active"><span class="icon">⚙</span> Settings</div>
+  </aside>
+
+  <main class="main">
+    <div class="breadcrumb">Account <span>›</span> <span>Settings</span></div>
+    <div class="page-header">
+      <h1 class="page-title">Settings</h1>
+      <p class="page-subtitle">Configure your school's basic info and team. Changes save automatically and are used across the platform.</p>
+    </div>
+
+    <!-- SCHOOL INFO -->
+    <section class="section">
+      <div class="section-header">
+        <div class="section-title">School Information</div>
+        <div class="section-meta">Used in headers, exports, and reports</div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-field full">
+          <label class="field-label" for="schoolName">School Name</label>
+          <input class="field-input" id="schoolName" placeholder="e.g. Gracie Barra Braço de Prata">
+        </div>
+        <div class="form-field full">
+          <label class="field-label" for="schoolAddress">Address</label>
+          <textarea class="field-input" id="schoolAddress" placeholder="Street, city, postal code, country"></textarea>
+        </div>
+        <div class="form-field">
+          <label class="field-label" for="schoolEmail">School Email</label>
+          <input class="field-input" id="schoolEmail" type="email" placeholder="contact@gb-school.com">
+        </div>
+        <div class="form-field">
+          <label class="field-label" for="schoolPhone">Phone (optional)</label>
+          <input class="field-input" id="schoolPhone" placeholder="+351 ...">
+        </div>
+      </div>
+    </section>
+
+    <!-- TEAM -->
+    <section class="section">
+      <div class="section-header">
+        <div class="section-title">Team</div>
+        <div class="section-meta" id="teamMeta">0 members</div>
+      </div>
+
+      <div class="team-list" id="teamList"></div>
+      <button class="add-team-btn" onclick="addMember()">+ Add Team Member</button>
+      <div class="hint">Click any avatar to upload a photo or change the color. Click the small belt strip below the avatar to set belt rank and stripes. Roles can be picked from the dropdown — pick "Other" for custom titles.</div>
+    </section>
+
+    <!-- DANGER ZONE -->
+    <section class="danger-zone">
+      <div class="section-title">Reset Settings</div>
+      <div class="hint" style="margin: 4px 0 0;">Restores school info and team to defaults. Other data (rocks, metrics, etc.) is not affected.</div>
+      <button class="danger-btn" onclick="resetAll()">Reset to defaults</button>
+    </section>
+  </main>
+</div>
+
+<!-- Editor popovers -->
+<div class="editor-popover" id="avatarPopover"></div>
+<div class="editor-popover" id="beltPopover"></div>
+<input type="file" id="photoUpload" accept="image/*" style="display:none;">
+
+<div class="save-indicator" id="saveIndicator">✓ Saved</div>
+
+<script>
+  const STORAGE_KEY = 'gb_settings_v1';
+
+  const PREDEFINED_ROLES = [
+    'School Owner',
+    'Program Director',
+    'Head Coach',
+    'Assistant Coach',
+    'Marketing',
+    'Other'
+  ];
+
+  const DEFAULT_DATA = {
+    school: {
+      name: 'Gracie Barra Braço de Prata',
+      address: 'Braço de Prata, Lisbon, Portugal',
+      email: '',
+      phone: ''
+    },
+    team: [
+      { id: 'm-seb', name: 'Sebastien G.', role: 'School Owner', email: 'sebastien.garnier@graciebarra.com', color: 2, belt: 'black', stripes: 0, photoData: '' },
+      { id: 'm-marco', name: 'Coach Marco', role: 'Head Coach', email: '', color: 1, belt: 'black', stripes: 0, photoData: '' },
+      { id: 'm-julien', name: 'Coach Julien', role: 'Assistant Coach', email: '', color: 4, belt: 'brown', stripes: 4, photoData: '' },
+      { id: 'm-maria', name: 'Maria L.', role: 'Marketing', email: '', color: 3, belt: 'none', stripes: 0, photoData: '' }
+    ]
+  };
+
+  const BELTS = [
+    { id: 'white', label: 'White' },
+    { id: 'blue', label: 'Blue' },
+    { id: 'purple', label: 'Purple' },
+    { id: 'brown', label: 'Brown' },
+    { id: 'black', label: 'Black' },
+    { id: 'coral', label: 'Coral' },
+    { id: 'red', label: 'Red' },
+    { id: 'none', label: 'N/A' }
+  ];
+
+  let data = loadData();
+  let openColorPicker = null;
+
+  function loadData() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return JSON.parse(JSON.stringify(DEFAULT_DATA));
+  }
+  function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    showSaved();
+  }
+  function showSaved() {
+    const el = document.getElementById('saveIndicator');
+    el.classList.add('show');
+    clearTimeout(showSaved._t);
+    showSaved._t = setTimeout(() => el.classList.remove('show'), 1500);
+  }
+  function escapeAttr(s) { return String(s ?? '').replace(/"/g, '&quot;'); }
+  function escapeHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  }
+  function initialsOf(name) {
+    return String(name || '').split(/\s+/).filter(Boolean).map(w => w[0]).join('').slice(0,2).toUpperCase() || '?';
+  }
+
+  // === RENDER ===
+  function renderSchool() {
+    document.getElementById('schoolName').value = data.school.name || '';
+    document.getElementById('schoolAddress').value = data.school.address || '';
+    document.getElementById('schoolEmail').value = data.school.email || '';
+    document.getElementById('schoolPhone').value = data.school.phone || '';
+  }
+
+  function renderTeam() {
+    const list = document.getElementById('teamList');
+    list.innerHTML = data.team.map(m => {
+      const belt = m.belt || 'none';
+      const stripes = Math.max(0, Math.min(4, m.stripes || 0));
+      const photoStyle = m.photoData ? `background-image: url('${m.photoData.replace(/'/g, "\\'")}');` : '';
+      const photoClass = m.photoData ? 'has-photo' : '';
+
+      return `
+        <div class="team-row" data-id="${m.id}">
+          <div class="avatar-stack">
+            <div class="avatar col-${m.color || 1} ${photoClass}" style="${photoStyle}" onclick="openAvatarEdit(event, '${m.id}')" title="Click to edit photo or color">${m.photoData ? '' : initialsOf(m.name)}</div>
+            <div class="belt-strip belt-${belt}" onclick="openBeltPick(event, '${m.id}')" title="Click to set belt rank">
+              <div class="belt-rank-bar">${'<div class="stripe"></div>'.repeat(stripes)}</div>
+            </div>
+          </div>
+          <input class="team-input" data-field="name" placeholder="Full name" value="${escapeAttr(m.name)}">
+          <select class="team-input role-select" data-field="role">
+            ${PREDEFINED_ROLES.map(r => `<option value="${escapeAttr(r)}" ${m.role === r ? 'selected' : ''}>${escapeHtml(r)}</option>`).join('')}
+            ${!PREDEFINED_ROLES.includes(m.role) && m.role ? `<option selected value="${escapeAttr(m.role)}">${escapeHtml(m.role)} (custom)</option>` : ''}
+          </select>
+          <input class="team-input" data-field="email" type="email" placeholder="email@example.com" value="${escapeAttr(m.email || '')}">
+          <button class="delete-team" onclick="deleteMember('${m.id}')" title="Remove">✕</button>
+        </div>
+      `;
+    }).join('');
+
+    document.getElementById('teamMeta').textContent = data.team.length + ' member' + (data.team.length === 1 ? '' : 's');
+
+    // Wire up inputs
+    list.querySelectorAll('.team-row').forEach(row => {
+      const id = row.dataset.id;
+      row.querySelectorAll('[data-field]').forEach(input => {
+        input.addEventListener('blur', () => {
+          const member = data.team.find(m => m.id === id);
+          if (!member) return;
+          const field = input.dataset.field;
+          let val = input.value;
+          if (field === 'role' && val === 'Other') {
+            const custom = prompt('Custom role name:', member.role && !PREDEFINED_ROLES.includes(member.role) ? member.role : '');
+            if (custom && custom.trim()) {
+              val = custom.trim();
+            } else {
+              val = 'Other';
+            }
+          }
+          member[field] = val;
+          saveData();
+          if (field === 'name') {
+            row.querySelector('.avatar').textContent = initialsOf(val);
+          }
+        });
+      });
+    });
+  }
+
+  // === ACTIONS ===
+  window.addMember = () => {
+    const newId = 'm-' + Date.now();
+    const usedColors = data.team.map(m => m.color);
+    let nextColor = 1;
+    for (let i = 1; i <= 6; i++) {
+      if (!usedColors.includes(i)) { nextColor = i; break; }
+    }
+    data.team.push({
+      id: newId,
+      name: '',
+      role: 'Head Coach',
+      email: '',
+      color: nextColor,
+      belt: 'none',
+      stripes: 0,
+      photoData: ''
+    });
+    saveData();
+    renderTeam();
+    // Focus the new row's name field
+    const row = document.querySelector(`.team-row[data-id="${newId}"]`);
+    if (row) row.querySelector('[data-field="name"]').focus();
+  };
+
+  window.deleteMember = (id) => {
+    const m = data.team.find(x => x.id === id);
+    if (!m) return;
+    if (!confirm(`Remove ${m.name || 'this member'} from the team?`)) return;
+    data.team = data.team.filter(x => x.id !== id);
+    saveData();
+    renderTeam();
+  };
+
+  window.resetAll = () => {
+    if (!confirm('Reset school info and team to defaults? This won\'t touch rocks, metrics, or other data.')) return;
+    data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+    saveData();
+    renderSchool();
+    renderTeam();
+  };
+
+  // === AVATAR EDITOR (photo + color) ===
+  let activeEditorMemberId = null;
+
+  function positionPopover(popover, anchor) {
+    const rect = anchor.getBoundingClientRect();
+    popover.style.top = (rect.bottom + window.scrollY + 6) + 'px';
+    // Keep popover inside viewport
+    const leftCandidate = rect.left + window.scrollX;
+    const maxLeft = window.scrollX + window.innerWidth - 260;
+    popover.style.left = Math.min(leftCandidate, maxLeft) + 'px';
+  }
+
+  function closeAllPopovers() {
+    document.getElementById('avatarPopover').classList.remove('open');
+    document.getElementById('beltPopover').classList.remove('open');
+    activeEditorMemberId = null;
+  }
+
+  window.openAvatarEdit = (e, memberId) => {
+    e.stopPropagation();
+    closeAllPopovers();
+    const popover = document.getElementById('avatarPopover');
+    const member = data.team.find(m => m.id === memberId);
+    if (!member) return;
+    activeEditorMemberId = memberId;
+
+    popover.innerHTML = `
+      <div class="editor-row">
+        <div class="editor-row-label">Profile Photo</div>
+        <div class="editor-row-content">
+          <button class="editor-btn" onclick="triggerPhotoUpload('${member.id}')">${member.photoData ? 'Change Photo' : 'Upload Photo'}</button>
+          ${member.photoData ? `<button class="editor-btn secondary" onclick="removePhoto('${member.id}')">Remove</button>` : ''}
+        </div>
+      </div>
+      <div class="editor-row">
+        <div class="editor-row-label">Initials Color</div>
+        <div class="editor-row-content">
+          ${[1,2,3,4,5,6].map(c => `<div class="color-swatch col-${c} ${member.color === c ? 'selected' : ''}" data-color="${c}"></div>`).join('')}
+        </div>
+      </div>
+    `;
+    positionPopover(popover, e.currentTarget || e.target);
+    popover.classList.add('open');
+
+    popover.querySelectorAll('.color-swatch').forEach(sw => {
+      sw.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        const m = data.team.find(x => x.id === memberId);
+        if (!m) return;
+        m.color = parseInt(sw.dataset.color);
+        saveData();
+        renderTeam();
+        // refresh popover selection
+        popover.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+        sw.classList.add('selected');
+      });
+    });
+  };
+
+  window.triggerPhotoUpload = (memberId) => {
+    const input = document.getElementById('photoUpload');
+    input.value = '';
+    input.dataset.memberId = memberId;
+    input.click();
+  };
+
+  window.removePhoto = (memberId) => {
+    const m = data.team.find(x => x.id === memberId);
+    if (!m) return;
+    m.photoData = '';
+    saveData();
+    renderTeam();
+    closeAllPopovers();
+  };
+
+  document.getElementById('photoUpload').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    const memberId = e.target.dataset.memberId;
+    if (!file || !memberId) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      // Resize to max 256x256 using canvas to save storage
+      const img = new Image();
+      img.onload = () => {
+        const max = 256;
+        const ratio = Math.min(max / img.width, max / img.height, 1);
+        const w = Math.round(img.width * ratio);
+        const h = Math.round(img.height * ratio);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+        const m = data.team.find(x => x.id === memberId);
+        if (!m) return;
+        m.photoData = dataUrl;
+        saveData();
+        renderTeam();
+        closeAllPopovers();
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // === BELT PICKER ===
+  window.openBeltPick = (e, memberId) => {
+    e.stopPropagation();
+    closeAllPopovers();
+    const popover = document.getElementById('beltPopover');
+    const member = data.team.find(m => m.id === memberId);
+    if (!member) return;
+    activeEditorMemberId = memberId;
+
+    popover.innerHTML = `
+      <div class="editor-row">
+        <div class="editor-row-label">Belt</div>
+        <div class="editor-row-content">
+          ${BELTS.map(b => `<div class="belt-option belt-${b.id} ${member.belt === b.id ? 'selected' : ''}" data-belt="${b.id}" title="${escapeAttr(b.label)}"></div>`).join('')}
+        </div>
+      </div>
+      <div class="editor-row">
+        <div class="editor-row-label">Stripes</div>
+        <div class="editor-row-content">
+          ${[0,1,2,3,4].map(s => `<button class="stripe-option ${(member.stripes||0) === s ? 'selected' : ''}" data-stripes="${s}">${s}</button>`).join('')}
+        </div>
+      </div>
+    `;
+    positionPopover(popover, e.currentTarget || e.target);
+    popover.classList.add('open');
+
+    popover.querySelectorAll('.belt-option').forEach(opt => {
+      opt.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        const m = data.team.find(x => x.id === memberId);
+        if (!m) return;
+        m.belt = opt.dataset.belt;
+        if (m.belt === 'none') m.stripes = 0;
+        saveData();
+        renderTeam();
+        popover.querySelectorAll('.belt-option').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+      });
+    });
+
+    popover.querySelectorAll('.stripe-option').forEach(btn => {
+      btn.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        const m = data.team.find(x => x.id === memberId);
+        if (!m) return;
+        m.stripes = parseInt(btn.dataset.stripes);
+        saveData();
+        renderTeam();
+        popover.querySelectorAll('.stripe-option').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+      });
+    });
+  };
+
+  document.addEventListener('click', (e) => {
+    if (activeEditorMemberId &&
+        !e.target.closest('.editor-popover') &&
+        !e.target.closest('.avatar') &&
+        !e.target.closest('.belt-strip')) {
+      closeAllPopovers();
+    }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAllPopovers();
+  });
+
+  // === SCHOOL INFO HANDLERS ===
+  ['schoolName', 'schoolAddress', 'schoolEmail', 'schoolPhone'].forEach(id => {
+    document.getElementById(id).addEventListener('blur', () => {
+      const field = id.replace('school', '').toLowerCase();
+      data.school[field] = document.getElementById(id).value.trim();
+      saveData();
+    });
+  });
+
+  // Initial render
+  renderSchool();
+  renderTeam();
+</script>
+
+</body>
+</html>

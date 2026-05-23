@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GB Platform — SWOT Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gb-red: #C8102E;
+    --gb-red-soft: #FCE8EC;
+    --gb-dark: #1A1A1A;
+    --text: #2D2D2D;
+    --text-soft: #6B6B6B;
+    --text-faint: #9B9B9B;
+    --bg: #FAFAF8;
+    --card: #FFFFFF;
+    --border: #ECECE8;
+    --accent: #D4A857;
+    --green: #4A8F5E;
+    --green-soft: #E8F4EC;
+    --amber: #D97706;
+    --amber-soft: #FEF3E2;
+    --blue: #2563EB;
+    --blue-soft: #DBEAFE;
+    --purple: #6B46C1;
+    --purple-soft: #EDE9FE;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,0.10);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .app { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+  /* === SIDEBAR === */
+  .sidebar {
+    background: #FFFFFF;
+    border-right: 1px solid var(--border);
+    padding: 28px 16px;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    padding: 0 12px 32px; border-bottom: 1px solid var(--border); margin-bottom: 24px;
+  }
+  .logo-mark { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-mark img { width: 100%; height: 100%; display: block; object-fit: contain; }
+  .logo-text { font-weight: 700; font-size: 15px; letter-spacing: -0.3px; }
+  .logo-text span { color: var(--text-faint); font-weight: 400; }
+
+  .nav-section {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-faint); padding: 16px 12px 8px; font-weight: 600;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px; border-radius: 8px;
+    color: var(--text-soft); cursor: pointer;
+    font-size: 14px; font-weight: 500; transition: all 0.15s;
+  }
+  .nav-item:hover { background: var(--bg); color: var(--text); }
+  .nav-item.active { background: var(--gb-red-soft); color: var(--gb-red); font-weight: 600; }
+  .nav-item .icon { font-size: 16px; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .nav-item .icon svg { width: 18px; height: 18px; }
+
+  /* === MAIN === */
+  .main { padding: 40px 56px 80px; max-width: 1320px; }
+  .breadcrumb { font-size: 13px; color: var(--text-faint); margin-bottom: 12px; }
+  .breadcrumb span { color: var(--text); font-weight: 500; }
+  .page-header { margin-bottom: 32px; }
+  .page-title {
+    font-size: 32px; font-weight: 700; letter-spacing: -0.8px;
+    color: var(--gb-dark); margin-bottom: 6px;
+  }
+  .page-subtitle { font-size: 15px; color: var(--text-soft); max-width: 720px; }
+
+  /* === INTRO BANNER === */
+  .intro-banner {
+    background: linear-gradient(135deg, #1A1A1A 0%, #2C2C2C 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 32px 36px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .intro-banner::after {
+    content: '';
+    position: absolute;
+    top: -50%; right: -10%;
+    width: 50%; height: 200%;
+    background: radial-gradient(circle, rgba(212,168,87,0.18), transparent 70%);
+    pointer-events: none;
+  }
+  .intro-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .intro-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    margin-bottom: 8px;
+    max-width: 640px;
+  }
+  .intro-text {
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    max-width: 640px;
+    line-height: 1.6;
+  }
+
+  /* === TOOLS GRID === */
+  .section-title-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-faint);
+    font-weight: 600;
+  }
+  .section-meta { font-size: 13px; color: var(--text-soft); }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .tool-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.15s;
+    min-height: 220px;
+  }
+  .tool-card.active {
+    cursor: pointer;
+  }
+  .tool-card.active:hover {
+    border-color: var(--text-soft);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .tool-card.coming-soon {
+    background: var(--bg);
+    border-style: dashed;
+    opacity: 0.85;
+  }
+
+  .tool-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .tool-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--gb-red-soft); color: var(--gb-red);
+    font-size: 18px;
+  }
+  .tool-icon.proshop { background: var(--gb-red-soft); color: var(--gb-red); }
+  .tool-icon.mat { background: var(--amber-soft); color: var(--amber); }
+  .tool-icon.member { background: var(--blue-soft); color: var(--blue); }
+  .tool-icon.marketing { background: var(--purple-soft); color: var(--purple); }
+  .tool-icon.finance { background: var(--green-soft); color: var(--green); }
+  .tool-icon.swot { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+
+  .tool-status {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 12px;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .tool-status .dot { width: 5px; height: 5px; border-radius: 50%; }
+  .tool-status.active { background: var(--green-soft); color: var(--green); }
+  .tool-status.active .dot { background: var(--green); }
+  .tool-status.coming { background: var(--bg); color: var(--text-soft); border: 1px solid var(--border); }
+  .tool-status.coming .dot { background: var(--text-soft); }
+
+  .tool-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--gb-dark);
+    letter-spacing: -0.2px;
+    line-height: 1.3;
+  }
+  .tool-desc {
+    font-size: 13px;
+    color: var(--text-soft);
+    line-height: 1.5;
+    flex: 1;
+  }
+  .tool-bottom {
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .tool-action {
+    background: var(--gb-red);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .tool-action:hover { background: #A50D26; }
+  .tool-action:disabled {
+    background: var(--bg);
+    color: var(--text-faint);
+    border: 1px solid var(--border);
+    cursor: not-allowed;
+  }
+  .tool-meta {
+    font-size: 11px;
+    color: var(--text-faint);
+    font-weight: 500;
+  }
+</style>
+<link rel="stylesheet" href="responsive.css">
+<script src="responsive.js" defer></script>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark"><img src="gracie-barra-logo.png.png" alt="Gracie Barra"></div>
+      <div class="logo-text">Management <span>OS</span></div>
+    </div>
+
+    <div class="nav-section">School</div>
+    <div class="nav-item" onclick="location.href='dashboard.html'"><span class="icon">◐</span> Dashboard</div>
+    <div class="nav-item" onclick="location.href='vision.html'"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="15" r="4"/><circle cx="18" cy="15" r="4"/><path d="M6 11V7m12 4V7M8 7h8"/><path d="M10 15h4"/></svg></span> Vision</div>
+    <div class="nav-item" onclick="location.href='rocks.html'"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg></span> Rocks</div>
+    <div class="nav-item" onclick="location.href='metrics.html'"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14a10 10 0 0 1 20 0"/><path d="M12 14l5-3"/><circle cx="12" cy="14" r="1.5" fill="currentColor"/></svg></span> Metrics</div>
+    <div class="nav-item" onclick="location.href='todos.html'"><span class="icon">◯</span> To-Dos</div>
+    <div class="nav-item" onclick="location.href='issues.html'"><span class="icon">!</span> Issues</div>
+
+    <div class="nav-section">Knowledge</div>
+    <div class="nav-item" onclick="location.href='sops.html'"><span class="icon">▤</span> SOPs Hub</div>
+    <div class="nav-item active"><span class="icon">▥</span> SWOT Analysis</div>
+
+    <div class="nav-section">Rhythm</div>
+    <div class="nav-item" onclick="location.href='meetings.html'"><span class="icon">▶</span> Meetings</div>
+    <div class="nav-item"><span class="icon">★</span> Headlines</div>
+
+    <div class="nav-section">Account</div>
+    <div class="nav-item" onclick="location.href=&#39;settings.html&#39;"><span class="icon">⚙</span> Settings</div>
+  </aside>
+
+  <main class="main">
+    <div class="breadcrumb">Knowledge <span>›</span> <span>SWOT Analysis</span></div>
+    <div class="page-header">
+      <h1 class="page-title">School Assessments</h1>
+      <p class="page-subtitle">Tools to measure your school's strengths, weaknesses, opportunities, and threats. Score each area, get clarity, take action.</p>
+    </div>
+
+    <section class="intro-banner">
+      <div class="intro-label">Why this matters</div>
+      <div class="intro-title">Run honest assessments, build a stronger school.</div>
+      <div class="intro-text">Every dimension of the school — proshop, mat quality, member experience, marketing, finances — can be scored, tracked, and improved. Each tool below is a focused diagnostic. Use one at a time, share the results with your team, build action items, and track progress over time.</div>
+    </section>
+
+    <div class="section-title-row">
+      <div class="section-title">Assessment Tools</div>
+      <div class="section-meta">2 active · more coming</div>
+    </div>
+
+    <div class="tools-grid">
+      <!-- FINANCIAL HEALTH SCORE (Active) -->
+      <div class="tool-card active" onclick="location.href='financial-health.html'">
+        <div class="tool-top">
+          <div class="tool-icon finance">📊</div>
+          <div class="tool-status active"><span class="dot"></span>Active</div>
+        </div>
+        <div class="tool-name">Financial Health Score</div>
+        <div class="tool-desc">Revenue mix, cost structure, billing discipline, cash position, and forward visibility. 24 questions across 6 dimensions.</div>
+        <div class="tool-bottom">
+          <div class="tool-meta">~12 minutes</div>
+          <button class="tool-action" onclick="event.stopPropagation(); location.href='financial-health.html'">Open Tool →</button>
+        </div>
+      </div>
+
+      <!-- PROSHOP SCORE (Active) -->
+      <div class="tool-card active" onclick="location.href='proshop-score.html'">
+        <div class="tool-top">
+          <div class="tool-icon proshop">🛍</div>
+          <div class="tool-status active"><span class="dot"></span>Active</div>
+        </div>
+        <div class="tool-name">Proshop Score</div>
+        <div class="tool-desc">Pre-assessment of your Proshop — inventory, sales process, customer experience, financial discipline, brand alignment. Built by GB Wear Europe.</div>
+        <div class="tool-bottom">
+          <div class="tool-meta">~10 minutes</div>
+          <button class="tool-action" onclick="event.stopPropagation(); location.href='proshop-score.html'">Open Tool →</button>
+        </div>
+      </div>
+
+      <!-- MAT & COACHING SCORE -->
+      <div class="tool-card coming-soon">
+        <div class="tool-top">
+          <div class="tool-icon mat">🥋</div>
+          <div class="tool-status coming"><span class="dot"></span>Coming Soon</div>
+        </div>
+        <div class="tool-name">Mat & Coaching Score</div>
+        <div class="tool-desc">Class structure, instructor quality, student progression, safety standards, and mat culture.</div>
+        <div class="tool-bottom">
+          <div class="tool-meta">In development</div>
+          <button class="tool-action" disabled>Open Tool →</button>
+        </div>
+      </div>
+
+      <!-- MEMBER EXPERIENCE SCORE -->
+      <div class="tool-card coming-soon">
+        <div class="tool-top">
+          <div class="tool-icon member">👥</div>
+          <div class="tool-status coming"><span class="dot"></span>Coming Soon</div>
+        </div>
+        <div class="tool-name">Member Experience Score</div>
+        <div class="tool-desc">Lead intake, trial conversion, onboarding, retention rituals, communication, and member journey.</div>
+        <div class="tool-bottom">
+          <div class="tool-meta">In development</div>
+          <button class="tool-action" disabled>Open Tool →</button>
+        </div>
+      </div>
+
+      <!-- MARKETING & BRAND SCORE -->
+      <div class="tool-card coming-soon">
+        <div class="tool-top">
+          <div class="tool-icon marketing">📣</div>
+          <div class="tool-status coming"><span class="dot"></span>Coming Soon</div>
+        </div>
+        <div class="tool-name">Marketing & Brand Score</div>
+        <div class="tool-desc">Brand alignment, social presence, content strategy, reviews, and local market positioning.</div>
+        <div class="tool-bottom">
+          <div class="tool-meta">In development</div>
+          <button class="tool-action" disabled>Open Tool →</button>
+        </div>
+      </div>
+
+      <!-- FULL SWOT ANALYSIS -->
+      <div class="tool-card coming-soon">
+        <div class="tool-top">
+          <div class="tool-icon swot">◰</div>
+          <div class="tool-status coming"><span class="dot"></span>Coming Soon</div>
+        </div>
+        <div class="tool-name">Full SWOT Analysis</div>
+        <div class="tool-desc">Synthesize all scores into a single Strengths, Weaknesses, Opportunities, Threats picture of the school.</div>
+        <div class="tool-bottom">
+          <div class="tool-meta">In development</div>
+          <button class="tool-action" disabled>Open Tool →</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GB Platform — Metrics</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gb-red: #C8102E;
+    --gb-red-soft: #FCE8EC;
+    --gb-dark: #1A1A1A;
+    --text: #2D2D2D;
+    --text-soft: #6B6B6B;
+    --text-faint: #9B9B9B;
+    --bg: #FAFAF8;
+    --card: #FFFFFF;
+    --border: #ECECE8;
+    --accent: #D4A857;
+    --green: #4A8F5E;
+    --green-soft: #E8F4EC;
+    --amber: #D97706;
+    --amber-soft: #FEF3E2;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,0.10);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+  /* === SIDEBAR === */
+  .sidebar {
+    background: #FFFFFF;
+    border-right: 1px solid var(--border);
+    padding: 28px 16px;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    padding: 0 12px 32px; border-bottom: 1px solid var(--border); margin-bottom: 24px;
+  }
+  .logo-mark {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-mark img { width: 100%; height: 100%; display: block; object-fit: contain; }
+  .logo-text { font-weight: 700; font-size: 15px; letter-spacing: -0.3px; }
+  .logo-text span { color: var(--text-faint); font-weight: 400; }
+
+  .nav-section {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-faint); padding: 16px 12px 8px; font-weight: 600;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px; border-radius: 8px;
+    color: var(--text-soft); cursor: pointer;
+    font-size: 14px; font-weight: 500; transition: all 0.15s;
+  }
+  .nav-item:hover { background: var(--bg); color: var(--text); }
+  .nav-item.active { background: var(--gb-red-soft); color: var(--gb-red); font-weight: 600; }
+  .nav-item .icon { font-size: 16px; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .nav-item .icon svg { width: 18px; height: 18px; }
+
+  /* === MAIN === */
+  .main { padding: 40px 56px 80px; max-width: 1320px; }
+
+  .breadcrumb { font-size: 13px; color: var(--text-faint); margin-bottom: 12px; }
+  .breadcrumb span { color: var(--text); font-weight: 500; }
+
+  .page-header { margin-bottom: 28px; }
+  .page-title {
+    font-size: 32px; font-weight: 700; letter-spacing: -0.8px;
+    color: var(--gb-dark); margin-bottom: 6px;
+  }
+  .page-subtitle { font-size: 15px; color: var(--text-soft); max-width: 720px; }
+
+  /* === ROLE TABS === */
+  .role-tabs-wrap {
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
+    overflow-x: auto;
+  }
+  .role-tabs {
+    display: flex;
+    gap: 4px;
+    min-width: max-content;
+  }
+  .role-tab {
+    padding: 12px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-soft);
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    font-family: inherit;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .role-tab:hover { color: var(--text); }
+  .role-tab.active {
+    color: var(--gb-red);
+    border-bottom-color: var(--gb-red);
+  }
+  .role-tab .count {
+    margin-left: 8px;
+    background: var(--bg);
+    color: var(--text-faint);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .role-tab.active .count { background: var(--gb-red-soft); color: var(--gb-red); }
+
+  /* === ROLE HEADER === */
+  .role-summary {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 24px;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .role-info { flex: 1; min-width: 280px; }
+  .role-name {
+    font-size: 22px; font-weight: 700; letter-spacing: -0.4px;
+    color: var(--gb-dark); margin-bottom: 4px;
+  }
+  .role-desc {
+    font-size: 14px; color: var(--text-soft);
+  }
+  .role-stats {
+    display: flex; gap: 8px;
+  }
+  .role-stat {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 18px;
+    text-align: center;
+    min-width: 100px;
+  }
+  .role-stat-value {
+    font-size: 22px; font-weight: 700;
+    color: var(--gb-dark); line-height: 1.2;
+  }
+  .role-stat-label {
+    font-size: 11px; color: var(--text-soft);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .role-stat.on-track .role-stat-value { color: var(--green); }
+  .role-stat.at-risk .role-stat-value { color: var(--amber); }
+  .role-stat.off-track .role-stat-value { color: var(--gb-red); }
+
+  /* === EDITABLE ROLES === */
+  .role-name[contenteditable="true"],
+  .role-desc[contenteditable="true"] {
+    outline: none;
+    border-radius: 6px;
+    padding: 2px 6px;
+    margin: -2px -6px;
+    transition: all 0.15s;
+    cursor: text;
+  }
+  .role-name[contenteditable="true"]:hover,
+  .role-desc[contenteditable="true"]:hover {
+    background: var(--bg);
+    box-shadow: inset 0 0 0 1px var(--border);
+  }
+  .role-name[contenteditable="true"]:focus,
+  .role-desc[contenteditable="true"]:focus {
+    background: white;
+    box-shadow: inset 0 0 0 2px var(--gb-red);
+  }
+  .role-name[contenteditable="true"]:empty::before,
+  .role-desc[contenteditable="true"]:empty::before {
+    content: attr(data-placeholder);
+    color: var(--text-faint);
+  }
+  .role-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .role-action-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-soft);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .role-action-btn:hover {
+    background: var(--bg);
+    color: var(--text);
+  }
+  .role-action-btn.danger:hover {
+    background: var(--gb-red-soft);
+    color: var(--gb-red);
+    border-color: var(--gb-red);
+  }
+  .edit-hint {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-top: 2px;
+    font-style: italic;
+  }
+
+  /* + Add role tab */
+  .role-tab.add-role {
+    color: var(--text-faint);
+    border: 1px dashed var(--border);
+    background: transparent;
+    border-bottom: 1px dashed var(--border);
+    border-radius: 8px;
+    margin-left: 10px;
+    margin-bottom: 4px;
+    padding: 10px 14px;
+  }
+  .role-tab.add-role:hover {
+    color: var(--gb-red);
+    border-color: var(--gb-red);
+    border-style: solid;
+  }
+  .role-tab.add-role.active { background: transparent; color: var(--gb-red); border-color: var(--gb-red); }
+
+  .add-kpi-btn {
+    background: var(--gb-red);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+    margin-bottom: 18px;
+  }
+  .add-kpi-btn:hover { background: #A50D26; }
+
+  /* === KPI GRID === */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .kpi-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 220px;
+  }
+  .kpi-card:hover {
+    border-color: var(--text-soft);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .kpi-card.on-track { border-top: 3px solid var(--green); }
+  .kpi-card.at-risk { border-top: 3px solid var(--amber); }
+  .kpi-card.off-track { border-top: 3px solid var(--gb-red); }
+
+  .kpi-top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 12px;
+  }
+  .kpi-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gb-dark);
+    letter-spacing: -0.1px;
+    line-height: 1.35;
+  }
+  .kpi-owner {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px;
+    color: var(--text-soft);
+    white-space: nowrap;
+  }
+  .avatar {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+  .avatar.col-1 { background: #2C5282; }
+  .avatar.col-2 { background: #C8102E; }
+  .avatar.col-3 { background: #4A8F5E; }
+  .avatar.col-4 { background: #D4A857; }
+  .avatar.col-5 { background: #6B46C1; }
+  .avatar.col-6 { background: #0F766E; }
+
+  .kpi-value-row {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 8px;
+  }
+  .kpi-value {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    color: var(--gb-dark);
+    line-height: 1;
+  }
+  .kpi-value .unit {
+    font-size: 16px;
+    color: var(--text-faint);
+    font-weight: 500;
+    margin-left: 2px;
+  }
+  .kpi-trend {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+  .kpi-trend.up-good { background: var(--green-soft); color: var(--green); }
+  .kpi-trend.down-bad { background: var(--gb-red-soft); color: var(--gb-red); }
+  .kpi-trend.up-bad { background: var(--gb-red-soft); color: var(--gb-red); }
+  .kpi-trend.down-good { background: var(--green-soft); color: var(--green); }
+  .kpi-trend.flat { background: var(--bg); color: var(--text-soft); }
+
+  .kpi-target-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+  .kpi-status-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .kpi-status-pill .dot { width: 5px; height: 5px; border-radius: 50%; }
+  .kpi-status-pill.on-track { background: var(--green-soft); color: var(--green); }
+  .kpi-status-pill.on-track .dot { background: var(--green); }
+  .kpi-status-pill.at-risk { background: var(--amber-soft); color: var(--amber); }
+  .kpi-status-pill.at-risk .dot { background: var(--amber); }
+  .kpi-status-pill.off-track { background: var(--gb-red-soft); color: var(--gb-red); }
+  .kpi-status-pill.off-track .dot { background: var(--gb-red); }
+
+  .sparkline-wrap {
+    margin-top: auto;
+    padding-top: 8px;
+  }
+  .sparkline {
+    width: 100%;
+    height: 50px;
+    display: block;
+  }
+  .sparkline-label {
+    display: flex; justify-content: space-between;
+    font-size: 10px;
+    color: var(--text-faint);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  .delete-card {
+    position: absolute; top: 12px; right: 12px;
+    background: transparent; border: none;
+    width: 24px; height: 24px; border-radius: 6px;
+    cursor: pointer; color: var(--text-faint); font-size: 14px;
+    opacity: 0; transition: opacity 0.15s;
+  }
+  .kpi-card:hover .delete-card { opacity: 1; }
+  .delete-card:hover { background: var(--gb-red-soft); color: var(--gb-red); }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    color: var(--text-soft);
+    grid-column: 1 / -1;
+  }
+  .empty-state h3 { font-size: 18px; color: var(--text); margin-bottom: 8px; font-weight: 600; }
+  .empty-state p { font-size: 14px; max-width: 380px; margin: 0 auto 18px; }
+
+  /* === DRAWER === */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s; z-index: 50;
+  }
+  .overlay.open { opacity: 1; pointer-events: all; }
+
+  .drawer {
+    position: fixed; top: 0; right: 0;
+    width: 620px; max-width: 92vw; height: 100vh;
+    background: white; box-shadow: var(--shadow-lg);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 51; display: flex; flex-direction: column;
+  }
+  .drawer.open { transform: translateX(0); }
+
+  .drawer-header {
+    padding: 22px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .drawer-tag {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--text-faint); font-weight: 600;
+  }
+  .drawer-actions { display: flex; gap: 6px; }
+  .drawer-btn {
+    background: transparent; border: none;
+    width: 32px; height: 32px; border-radius: 8px;
+    cursor: pointer; font-size: 16px; color: var(--text-soft);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .drawer-btn:hover { background: var(--bg); }
+  .drawer-btn.danger:hover { background: var(--gb-red-soft); color: var(--gb-red); }
+
+  .drawer-body { padding: 28px 32px; overflow-y: auto; flex: 1; }
+
+  .drawer-title {
+    font-size: 22px; font-weight: 700; letter-spacing: -0.4px;
+    color: var(--gb-dark); margin-bottom: 18px;
+    outline: none; border-radius: 6px;
+    padding: 4px 8px; margin-left: -8px; margin-right: -8px;
+    transition: all 0.15s; cursor: text;
+  }
+  .drawer-title[contenteditable="true"]:hover {
+    background: var(--bg);
+    box-shadow: inset 0 0 0 1px var(--border);
+  }
+  .drawer-title[contenteditable="true"]:focus {
+    background: white;
+    box-shadow: inset 0 0 0 2px var(--gb-red);
+  }
+
+  .form-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px;
+    margin-bottom: 24px;
+  }
+  .form-field { display: flex; flex-direction: column; gap: 6px; }
+  .form-field.full { grid-column: 1 / -1; }
+  .field-label {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--text-faint); font-weight: 600;
+  }
+  .field-input {
+    font-size: 13px; color: var(--text); font-weight: 500;
+    padding: 8px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.15s;
+  }
+  .field-input:hover { border-color: var(--text-soft); }
+  .field-input:focus {
+    background: white;
+    border-color: var(--gb-red);
+    box-shadow: 0 0 0 3px var(--gb-red-soft);
+  }
+  select.field-input { cursor: pointer; }
+
+  .drawer-section { margin-bottom: 26px; }
+  .drawer-section-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+  }
+  .drawer-section-title {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--text-faint); font-weight: 600;
+  }
+  .add-btn {
+    background: transparent; border: 1px dashed var(--border);
+    color: var(--text-soft); padding: 4px 10px; border-radius: 6px;
+    font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit;
+  }
+  .add-btn:hover { color: var(--gb-red); border-color: var(--gb-red); }
+
+  /* === BIG CHART === */
+  .chart-wrap {
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 18px 14px 8px;
+    margin-bottom: 14px;
+  }
+  .big-chart { width: 100%; height: 160px; display: block; }
+
+  /* === HISTORY TABLE === */
+  .history-table { display: flex; flex-direction: column; gap: 4px; }
+  .history-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 40px;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--bg);
+    border-radius: 8px;
+    font-size: 13px;
+  }
+  .history-row.header {
+    background: transparent;
+    padding: 6px 12px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    letter-spacing: 0.06em;
+  }
+  .history-week { font-weight: 600; color: var(--text); }
+  .history-value {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    width: 100%;
+  }
+  .history-value:focus {
+    border-color: var(--gb-red);
+    box-shadow: 0 0 0 3px var(--gb-red-soft);
+  }
+  .delete-row {
+    background: transparent; border: none;
+    width: 22px; height: 22px; border-radius: 4px;
+    cursor: pointer; color: var(--text-faint); font-size: 12px;
+    opacity: 0; transition: opacity 0.15s;
+    justify-self: end;
+  }
+  .history-row:hover .delete-row { opacity: 1; }
+  .delete-row:hover { background: var(--gb-red-soft); color: var(--gb-red); }
+
+  .save-indicator {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--gb-dark); color: white;
+    padding: 10px 16px; border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    opacity: 0; transform: translateY(10px);
+    transition: all 0.3s; z-index: 100;
+    box-shadow: var(--shadow-lg);
+  }
+  .save-indicator.show { opacity: 1; transform: translateY(0); }
+
+  /* === CHART TOOLTIP === */
+  .chart-tooltip {
+    position: fixed;
+    background: var(--gb-dark);
+    color: white;
+    padding: 9px 13px;
+    border-radius: 8px;
+    font-size: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+    z-index: 200;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    white-space: nowrap;
+    min-width: 110px;
+  }
+  .chart-tooltip.show { opacity: 1; transform: translateY(0); }
+  .chart-tooltip .tip-week {
+    font-size: 10px;
+    color: rgba(255,255,255,0.55);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 3px;
+  }
+  .chart-tooltip .tip-value {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .chart-tooltip .tip-target {
+    font-size: 10px;
+    color: rgba(255,255,255,0.55);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .chart-tooltip .tip-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-weight: 700;
+    font-size: 10px;
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-left: 4px;
+  }
+  .chart-tooltip .tip-badge.hit { background: rgba(74,143,94,0.22); color: #6EE7A6; }
+  .chart-tooltip .tip-badge.miss { background: rgba(200,16,46,0.22); color: #FCA5A5; }
+
+  /* Make SVG dots/bars hoverable */
+  .sparkline [data-tip-w], .big-chart [data-tip-w] {
+    cursor: pointer;
+    transition: transform 0.1s;
+    transform-origin: center;
+    transform-box: fill-box;
+  }
+  .sparkline [data-tip-w]:hover, .big-chart [data-tip-w]:hover {
+    transform: scale(1.15);
+  }
+</style>
+<link rel="stylesheet" href="responsive.css">
+<script src="responsive.js" defer></script>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark"><img src="gracie-barra-logo.png.png" alt="Gracie Barra"></div>
+      <div class="logo-text">Management <span>OS</span></div>
+    </div>
+
+    <div class="nav-section">School</div>
+    <div class="nav-item" onclick="location.href='dashboard.html'"><span class="icon">◐</span> Dashboard</div>
+    <div class="nav-item" onclick="location.href='vision.html'"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="15" r="4"/><circle cx="18" cy="15" r="4"/><path d="M6 11V7m12 4V7M8 7h8"/><path d="M10 15h4"/></svg></span> Vision</div>
+    <div class="nav-item" onclick="location.href='rocks.html'"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg></span> Rocks</div>
+    <div class="nav-item active"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14a10 10 0 0 1 20 0"/><path d="M12 14l5-3"/><circle cx="12" cy="14" r="1.5" fill="currentColor"/></svg></span> Metrics</div>
+    <div class="nav-item" onclick="location.href='todos.html'"><span class="icon">◯</span> To-Dos</div>
+    <div class="nav-item" onclick="location.href='issues.html'"><span class="icon">!</span> Issues</div>
+
+    <div class="nav-section">Knowledge</div>
+    <div class="nav-item" onclick="location.href='sops.html'"><span class="icon">▤</span> SOPs Hub</div>
+    <div class="nav-item" onclick="location.href='swot.html'"><span class="icon">▥</span> SWOT Analysis</div>
+
+    <div class="nav-section">Rhythm</div>
+    <div class="nav-item" onclick="location.href='meetings.html'"><span class="icon">▶</span> Meetings</div>
+    <div class="nav-item"><span class="icon">★</span> Headlines</div>
+
+    <div class="nav-section">Account</div>
+    <div class="nav-item" onclick="location.href=&#39;settings.html&#39;"><span class="icon">⚙</span> Settings</div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="breadcrumb">School <span>›</span> <span>Metrics</span></div>
+
+    <div class="page-header">
+      <h1 class="page-title">Metrics & KPIs</h1>
+      <p class="page-subtitle">The numbers that tell your school's story. Track what matters at the school level and at each role's level — coaches, front desk, marketing.</p>
+    </div>
+
+    <div class="role-tabs-wrap">
+      <div class="role-tabs" id="roleTabs"></div>
+    </div>
+
+    <div class="role-summary" id="roleSummary"></div>
+
+    <button class="add-kpi-btn" onclick="addKpi()">+ Add KPI</button>
+
+    <div class="kpi-grid" id="kpiGrid"></div>
+  </main>
+</div>
+
+<!-- DRAWER -->
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div class="drawer-tag" id="drawerTag">KPI</div>
+    <div class="drawer-actions">
+      <button class="drawer-btn danger" id="drawerDelete" title="Delete">🗑</button>
+      <button class="drawer-btn" onclick="closeDrawer()" title="Close">✕</button>
+    </div>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</aside>
+
+<div class="save-indicator" id="saveIndicator">✓ Saved</div>
+<div class="chart-tooltip" id="chartTooltip"></div>
+
+<script>
+  // === DEFAULT DATA ===
+  const WEEKS = ['W17','W18','W19','W20','W21','W22','W23','W24'];
+
+  const DEFAULT_DATA = {
+    roles: [
+      { id: 'overall', name: 'Overall School', desc: 'School-wide health metrics — the vital signs of your academy.' },
+      { id: 'program-director', name: 'Program Director', desc: 'Strategic oversight, growth, and team leadership.' },
+      { id: 'head-coach', name: 'Head Coach', desc: 'Mat quality, student development, and class delivery.' },
+      { id: 'assistant-coach', name: 'Assistant Coach', desc: 'Support on the mat — class execution and student touchpoints.' },
+      { id: 'front-desk', name: 'Front Desk', desc: 'First impressions, member service, and Proshop performance.' },
+      { id: 'marketing', name: 'Marketing', desc: 'Lead generation, content, and brand reach.' }
+    ],
+    kpis: [
+      // OVERALL
+      { id: 'k1', role: 'overall', name: 'Active members', owner: 'Sebastien G.', ownerColor: 2, unit: '', target: 250, direction: 'above', values: [{w:'W17',v:212},{w:'W18',v:214},{w:'W19',v:215},{w:'W20',v:216},{w:'W21',v:218},{w:'W22',v:218},{w:'W23',v:220},{w:'W24',v:222}] },
+      { id: 'k2', role: 'overall', name: 'Monthly revenue', owner: 'Sebastien G.', ownerColor: 2, unit: '€', target: 25000, direction: 'above', values: [{w:'W17',v:17800},{w:'W18',v:18200},{w:'W19',v:18500},{w:'W20',v:18400},{w:'W21',v:18800},{w:'W22',v:19100},{w:'W23',v:19300},{w:'W24',v:19500}] },
+      { id: 'k3', role: 'overall', name: 'Class attendance avg', owner: 'Coach Marco', ownerColor: 1, unit: '%', target: 75, direction: 'above', values: [{w:'W17',v:68},{w:'W18',v:72},{w:'W19',v:74},{w:'W20',v:71},{w:'W21',v:76},{w:'W22',v:78},{w:'W23',v:75},{w:'W24',v:77}] },
+      { id: 'k4', role: 'overall', name: 'Net member change', owner: 'Sebastien G.', ownerColor: 2, unit: '', target: 5, direction: 'above', values: [{w:'W17',v:2},{w:'W18',v:3},{w:'W19',v:4},{w:'W20',v:2},{w:'W21',v:5},{w:'W22',v:6},{w:'W23',v:4},{w:'W24',v:7}] },
+      { id: 'k5', role: 'overall', name: 'Member churn rate', owner: 'Sebastien G.', ownerColor: 2, unit: '%', target: 4, direction: 'below', values: [{w:'W17',v:5.2},{w:'W18',v:4.8},{w:'W19',v:4.5},{w:'W20',v:4.2},{w:'W21',v:3.9},{w:'W22',v:3.7},{w:'W23',v:3.8},{w:'W24',v:3.6}] },
+      { id: 'k6', role: 'overall', name: 'Open Rocks on track %', owner: 'Sebastien G.', ownerColor: 2, unit: '%', target: 80, direction: 'above', values: [{w:'W17',v:65},{w:'W18',v:70},{w:'W19',v:72},{w:'W20',v:75},{w:'W21',v:78},{w:'W22',v:75},{w:'W23',v:72},{w:'W24',v:70}] },
+
+      // PROGRAM DIRECTOR
+      { id: 'k10', role: 'program-director', name: 'Black belt promotions YTD', owner: 'Sebastien G.', ownerColor: 2, unit: '', target: 2, direction: 'above', values: [{w:'W17',v:0},{w:'W18',v:0},{w:'W19',v:1},{w:'W20',v:1},{w:'W21',v:1},{w:'W22',v:1},{w:'W23',v:1},{w:'W24',v:1}] },
+      { id: 'k11', role: 'program-director', name: 'Team meetings completed', owner: 'Sebastien G.', ownerColor: 2, unit: '/wk', target: 1, direction: 'above', values: [{w:'W17',v:1},{w:'W18',v:1},{w:'W19',v:0},{w:'W20',v:1},{w:'W21',v:1},{w:'W22',v:1},{w:'W23',v:1},{w:'W24',v:1}] },
+      { id: 'k12', role: 'program-director', name: 'SOPs documented', owner: 'Sebastien G.', ownerColor: 2, unit: '', target: 30, direction: 'above', values: [{w:'W17',v:14},{w:'W18',v:15},{w:'W19',v:17},{w:'W20',v:18},{w:'W21',v:19},{w:'W22',v:20},{w:'W23',v:21},{w:'W24',v:21}] },
+      { id: 'k13', role: 'program-director', name: '1:1 conversations with team', owner: 'Sebastien G.', ownerColor: 2, unit: '/wk', target: 3, direction: 'above', values: [{w:'W17',v:2},{w:'W18',v:3},{w:'W19',v:3},{w:'W20',v:2},{w:'W21',v:4},{w:'W22',v:3},{w:'W23',v:3},{w:'W24',v:3}] },
+
+      // HEAD COACH
+      { id: 'k20', role: 'head-coach', name: 'Adult class attendance avg', owner: 'Coach Marco', ownerColor: 1, unit: '%', target: 70, direction: 'above', values: [{w:'W17',v:62},{w:'W18',v:68},{w:'W19',v:72},{w:'W20',v:70},{w:'W21',v:74},{w:'W22',v:76},{w:'W23',v:72},{w:'W24',v:74}] },
+      { id: 'k21', role: 'head-coach', name: 'Stripe gradings completed', owner: 'Coach Marco', ownerColor: 1, unit: '/mo', target: 8, direction: 'above', values: [{w:'W17',v:6},{w:'W18',v:7},{w:'W19',v:5},{w:'W20',v:7},{w:'W21',v:9},{w:'W22',v:8},{w:'W23',v:6},{w:'W24',v:7}] },
+      { id: 'k22', role: 'head-coach', name: 'Student progress reviews', owner: 'Coach Marco', ownerColor: 1, unit: '/wk', target: 5, direction: 'above', values: [{w:'W17',v:3},{w:'W18',v:4},{w:'W19',v:5},{w:'W20',v:5},{w:'W21',v:6},{w:'W22',v:4},{w:'W23',v:5},{w:'W24',v:5}] },
+      { id: 'k23', role: 'head-coach', name: 'Injury reports', owner: 'Coach Marco', ownerColor: 1, unit: '/mo', target: 2, direction: 'below', values: [{w:'W17',v:3},{w:'W18',v:2},{w:'W19',v:1},{w:'W20',v:2},{w:'W21',v:1},{w:'W22',v:2},{w:'W23',v:0},{w:'W24',v:1}] },
+
+      // ASSISTANT COACH
+      { id: 'k30', role: 'assistant-coach', name: 'Classes coached', owner: 'Coach Julien', ownerColor: 4, unit: '/wk', target: 10, direction: 'above', values: [{w:'W17',v:8},{w:'W18',v:9},{w:'W19',v:10},{w:'W20',v:10},{w:'W21',v:11},{w:'W22',v:10},{w:'W23',v:10},{w:'W24',v:11}] },
+      { id: 'k31', role: 'assistant-coach', name: 'New student greetings', owner: 'Coach Julien', ownerColor: 4, unit: '/wk', target: 8, direction: 'above', values: [{w:'W17',v:5},{w:'W18',v:6},{w:'W19',v:7},{w:'W20',v:6},{w:'W21',v:9},{w:'W22',v:8},{w:'W23',v:7},{w:'W24',v:8}] },
+      { id: 'k32', role: 'assistant-coach', name: 'Mat hygiene checks', owner: 'Coach Julien', ownerColor: 4, unit: '/wk', target: 5, direction: 'above', values: [{w:'W17',v:5},{w:'W18',v:5},{w:'W19',v:4},{w:'W20',v:5},{w:'W21',v:5},{w:'W22',v:5},{w:'W23',v:5},{w:'W24',v:5}] },
+      { id: 'k33', role: 'assistant-coach', name: 'Kids class energy score', owner: 'Coach Julien', ownerColor: 4, unit: '/10', target: 8, direction: 'above', values: [{w:'W17',v:7.2},{w:'W18',v:7.5},{w:'W19',v:7.8},{w:'W20',v:7.6},{w:'W21',v:8.1},{w:'W22',v:8.3},{w:'W23',v:8.0},{w:'W24',v:8.2}] },
+
+      // FRONT DESK
+      { id: 'k40', role: 'front-desk', name: 'New trial sign-ups', owner: 'Maria L.', ownerColor: 3, unit: '/wk', target: 8, direction: 'above', values: [{w:'W17',v:5},{w:'W18',v:7},{w:'W19',v:8},{w:'W20',v:6},{w:'W21',v:9},{w:'W22',v:10},{w:'W23',v:8},{w:'W24',v:9}] },
+      { id: 'k41', role: 'front-desk', name: 'Trial → paying conversion', owner: 'Maria L.', ownerColor: 3, unit: '%', target: 70, direction: 'above', values: [{w:'W17',v:58},{w:'W18',v:60},{w:'W19',v:62},{w:'W20',v:65},{w:'W21',v:63},{w:'W22',v:67},{w:'W23',v:68},{w:'W24',v:65}] },
+      { id: 'k42', role: 'front-desk', name: 'Proshop weekly sales', owner: 'Maria L.', ownerColor: 3, unit: '€', target: 600, direction: 'above', values: [{w:'W17',v:420},{w:'W18',v:510},{w:'W19',v:480},{w:'W20',v:550},{w:'W21',v:620},{w:'W22',v:580},{w:'W23',v:650},{w:'W24',v:610}] },
+      { id: 'k43', role: 'front-desk', name: 'Member check-ins logged', owner: 'Maria L.', ownerColor: 3, unit: '/wk', target: 450, direction: 'above', values: [{w:'W17',v:380},{w:'W18',v:420},{w:'W19',v:450},{w:'W20',v:430},{w:'W21',v:470},{w:'W22',v:480},{w:'W23',v:460},{w:'W24',v:475}] },
+
+      // MARKETING
+      { id: 'k50', role: 'marketing', name: 'Social posts published', owner: 'Maria L.', ownerColor: 3, unit: '/wk', target: 5, direction: 'above', values: [{w:'W17',v:3},{w:'W18',v:4},{w:'W19',v:5},{w:'W20',v:4},{w:'W21',v:6},{w:'W22',v:5},{w:'W23',v:5},{w:'W24',v:6}] },
+      { id: 'k51', role: 'marketing', name: 'New leads generated', owner: 'Maria L.', ownerColor: 3, unit: '/wk', target: 15, direction: 'above', values: [{w:'W17',v:10},{w:'W18',v:12},{w:'W19',v:14},{w:'W20',v:11},{w:'W21',v:16},{w:'W22',v:17},{w:'W23',v:14},{w:'W24',v:15}] },
+      { id: 'k52', role: 'marketing', name: 'Instagram followers', owner: 'Maria L.', ownerColor: 3, unit: '', target: 3500, direction: 'above', values: [{w:'W17',v:3180},{w:'W18',v:3220},{w:'W19',v:3265},{w:'W20',v:3290},{w:'W21',v:3340},{w:'W22',v:3380},{w:'W23',v:3410},{w:'W24',v:3450}] },
+      { id: 'k53', role: 'marketing', name: 'Email open rate', owner: 'Maria L.', ownerColor: 3, unit: '%', target: 35, direction: 'above', values: [{w:'W17',v:28},{w:'W18',v:30},{w:'W19',v:32},{w:'W20',v:31},{w:'W21',v:33},{w:'W22',v:35},{w:'W23',v:34},{w:'W24',v:36}] }
+    ]
+  };
+
+  const STORAGE_KEY = "gb_metrics_data_v1";
+  let data = loadData();
+  let activeRole = 'overall';
+  let currentEdit = null;
+
+  function loadData() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return JSON.parse(JSON.stringify(DEFAULT_DATA));
+  }
+
+  function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    showSaved();
+  }
+
+  function showSaved() {
+    const el = document.getElementById('saveIndicator');
+    el.classList.add('show');
+    clearTimeout(showSaved._t);
+    showSaved._t = setTimeout(() => el.classList.remove('show'), 1500);
+  }
+
+  function escapeHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  }
+
+  function initialsOf(name) {
+    return name.split(/\s+/).map(w => w[0]).join('').slice(0,2).toUpperCase();
+  }
+
+  function formatValue(v, unit) {
+    if (unit === '€') return '€' + Number(v).toLocaleString();
+    if (unit === '%') return v + '%';
+    if (unit === '') return Number(v).toLocaleString();
+    return v + ' ' + unit;
+  }
+
+  function getStatus(kpi) {
+    const latest = kpi.values[kpi.values.length - 1]?.v;
+    if (latest === undefined || latest === null) return 'off-track';
+    if (kpi.direction === 'above') {
+      if (latest >= kpi.target) return 'on-track';
+      if (latest >= kpi.target * 0.85) return 'at-risk';
+      return 'off-track';
+    } else {
+      if (latest <= kpi.target) return 'on-track';
+      if (latest <= kpi.target * 1.15) return 'at-risk';
+      return 'off-track';
+    }
+  }
+
+  function getTrend(kpi) {
+    const v = kpi.values;
+    if (v.length < 2) return { pct: 0, direction: 'flat' };
+    const last = v[v.length - 1].v;
+    const prev = v[v.length - 2].v;
+    if (prev === 0) return { pct: 0, direction: 'flat' };
+    const pct = ((last - prev) / Math.abs(prev)) * 100;
+    let direction = 'flat';
+    if (pct > 1) direction = 'up';
+    else if (pct < -1) direction = 'down';
+    return { pct: Math.abs(pct).toFixed(1), direction, raw: pct };
+  }
+
+  function trendClass(kpi) {
+    const t = getTrend(kpi);
+    if (t.direction === 'flat') return 'flat';
+    const goingUp = t.direction === 'up';
+    const aboveGood = kpi.direction === 'above';
+    const isGood = (goingUp && aboveGood) || (!goingUp && !aboveGood);
+    if (isGood) return goingUp ? 'up-good' : 'down-good';
+    return goingUp ? 'up-bad' : 'down-bad';
+  }
+
+  function getKpisForRole(roleId) {
+    return data.kpis.filter(k => k.role === roleId);
+  }
+
+  function getValueColor(kpi, val) {
+    if (val === undefined || val === null) return '#9B9B9B';
+    if (kpi.direction === 'above') {
+      return val >= kpi.target ? '#4A8F5E' : '#C8102E';
+    } else {
+      return val <= kpi.target ? '#4A8F5E' : '#C8102E';
+    }
+  }
+
+  function renderSparkline(kpi, big = false) {
+    const chartType = kpi.chartType || 'line';
+    const w = big ? 560 : 260;
+    const h = big ? 160 : 50;
+    const padding = big ? 30 : 6;
+    const values = kpi.values.map(v => v.v);
+    if (values.length === 0) return '';
+
+    // Include target so it's always visible in the chart
+    const min = Math.min(...values, kpi.target);
+    const max = Math.max(...values, kpi.target);
+    const padRange = (max - min) * 0.1 || 1;
+    const yMin = min - padRange;
+    const yMax = max + padRange;
+    const yRange = yMax - yMin || 1;
+
+    const targetY = padding + (1 - (kpi.target - yMin) / yRange) * (h - padding * 2);
+
+    if (chartType === 'bar') {
+      return renderBarChart(kpi, w, h, padding, values, yMin, yRange, targetY, big);
+    }
+    return renderLineChart(kpi, w, h, padding, values, yMin, yRange, targetY, big);
+  }
+
+  function renderLineChart(kpi, w, h, padding, values, yMin, yRange, targetY, big) {
+    const stepX = (w - padding * 2) / Math.max(values.length - 1, 1);
+    const points = values.map((v, i) => {
+      const x = padding + i * stepX;
+      const y = padding + (1 - (v - yMin) / yRange) * (h - padding * 2);
+      return [x, y];
+    });
+
+    const linePath = points.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+
+    let svg = `<svg class="${big ? 'big-chart' : 'sparkline'}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">`;
+
+    // Target line
+    svg += `<line x1="${padding}" y1="${targetY.toFixed(1)}" x2="${w-padding}" y2="${targetY.toFixed(1)}" stroke="#9B9B9B" stroke-width="1" stroke-dasharray="3,3"/>`;
+    if (big) {
+      svg += `<text x="${w-padding-2}" y="${(targetY-4).toFixed(1)}" text-anchor="end" font-size="10" fill="#9B9B9B" font-weight="600">Target: ${formatValue(kpi.target, kpi.unit)}</text>`;
+    }
+
+    // Connecting line — neutral gray, lighter weight so dots stand out
+    svg += `<path d="${linePath}" fill="none" stroke="#6B6B6B" stroke-width="${big ? 1.5 : 1.3}" stroke-linecap="round" stroke-linejoin="round" opacity="0.35"/>`;
+
+    // Dots — each colored by its own target hit
+    points.forEach((p, i) => {
+      const r = big ? 4.5 : 3.2;
+      const color = getValueColor(kpi, values[i]);
+      const week = kpi.values[i].w;
+      svg += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${r}" fill="${color}" stroke="white" stroke-width="${big ? 2 : 1.5}" data-tip-w="${escapeHtml(week)}" data-tip-v="${values[i]}" data-tip-target="${kpi.target}" data-tip-unit="${escapeHtml(kpi.unit)}" data-tip-direction="${kpi.direction}"/>`;
+    });
+
+    if (big) {
+      kpi.values.forEach((vv, i) => {
+        const x = padding + i * stepX;
+        svg += `<text x="${x.toFixed(1)}" y="${h - 6}" text-anchor="middle" font-size="10" fill="#9B9B9B">${vv.w}</text>`;
+        const color = getValueColor(kpi, values[i]);
+        svg += `<text x="${x.toFixed(1)}" y="${(points[i][1] - 11).toFixed(1)}" text-anchor="middle" font-size="10" fill="${color}" font-weight="700">${vv.v}</text>`;
+      });
+    }
+
+    svg += `</svg>`;
+    return svg;
+  }
+
+  function renderBarChart(kpi, w, h, padding, values, yMin, yRange, targetY, big) {
+    const baseline = yMin < 0 ? 0 : yMin;
+    const baselineY = padding + (1 - (baseline - yMin) / yRange) * (h - padding * 2);
+
+    const barCount = values.length;
+    const barGap = big ? 8 : 3;
+    const totalGapWidth = barGap * (barCount - 1);
+    const barWidth = ((w - padding * 2) - totalGapWidth) / barCount;
+    const radius = Math.min(barWidth / 4, big ? 3 : 1.5);
+
+    let svg = `<svg class="${big ? 'big-chart' : 'sparkline'}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">`;
+
+    // Bars — each colored by target hit
+    values.forEach((v, i) => {
+      const x = padding + i * (barWidth + barGap);
+      const y = padding + (1 - (v - yMin) / yRange) * (h - padding * 2);
+      const barHeight = Math.max(2, Math.abs(baselineY - y));
+      const barY = Math.min(y, baselineY);
+      const color = getValueColor(kpi, v);
+      const week = kpi.values[i].w;
+      svg += `<rect x="${x.toFixed(1)}" y="${barY.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${barHeight.toFixed(1)}" rx="${radius}" fill="${color}" data-tip-w="${escapeHtml(week)}" data-tip-v="${v}" data-tip-target="${kpi.target}" data-tip-unit="${escapeHtml(kpi.unit)}" data-tip-direction="${kpi.direction}"/>`;
+    });
+
+    // Target line on top
+    svg += `<line x1="${padding}" y1="${targetY.toFixed(1)}" x2="${w-padding}" y2="${targetY.toFixed(1)}" stroke="#1A1A1A" stroke-width="1.2" stroke-dasharray="4,3"/>`;
+    if (big) {
+      svg += `<text x="${w-padding-2}" y="${(targetY-4).toFixed(1)}" text-anchor="end" font-size="10" fill="#1A1A1A" font-weight="600">Target: ${formatValue(kpi.target, kpi.unit)}</text>`;
+    }
+
+    if (big) {
+      kpi.values.forEach((vv, i) => {
+        const x = padding + i * (barWidth + barGap) + barWidth / 2;
+        svg += `<text x="${x.toFixed(1)}" y="${h - 6}" text-anchor="middle" font-size="10" fill="#9B9B9B">${vv.w}</text>`;
+        const y = padding + (1 - (values[i] - yMin) / yRange) * (h - padding * 2);
+        svg += `<text x="${x.toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" font-size="10" fill="#1A1A1A" font-weight="700">${vv.v}</text>`;
+      });
+    }
+
+    svg += `</svg>`;
+    return svg;
+  }
+
+  // === RENDER ===
+  function renderRoleTabs() {
+    const tabs = document.getElementById('roleTabs');
+    tabs.innerHTML = data.roles.map(r => {
+      const count = getKpisForRole(r.id).length;
+      return `<button class="role-tab ${activeRole === r.id ? 'active' : ''}" onclick="switchRole('${r.id}')">${escapeHtml(r.name)}<span class="count">${count}</span></button>`;
+    }).join('') + `<button class="role-tab add-role" onclick="addRole()" title="Add a new role / category">+ New role</button>`;
+  }
+
+  function switchRole(id) {
+    activeRole = id;
+    renderAll();
+  }
+
+  function renderRoleSummary() {
+    const role = data.roles.find(r => r.id === activeRole);
+    if (!role) return;
+    const kpis = getKpisForRole(activeRole);
+    const onTrack = kpis.filter(k => getStatus(k) === 'on-track').length;
+    const atRisk = kpis.filter(k => getStatus(k) === 'at-risk').length;
+    const offTrack = kpis.filter(k => getStatus(k) === 'off-track').length;
+    const canDelete = role.id !== 'overall';
+
+    document.getElementById('roleSummary').innerHTML = `
+      <div class="role-info">
+        <div class="role-name" contenteditable="true" data-role-field="name" data-placeholder="Role name...">${escapeHtml(role.name)}</div>
+        <div class="role-desc" contenteditable="true" data-role-field="desc" data-placeholder="Describe what this role tracks...">${escapeHtml(role.desc)}</div>
+        <div class="edit-hint">Click the name or description to edit · changes save automatically</div>
+        <div class="role-actions">
+          ${canDelete ? `<button class="role-action-btn danger" onclick="deleteRole('${role.id}')">🗑 Delete role</button>` : '<button class="role-action-btn" disabled style="opacity:0.5; cursor:not-allowed;">Overall School (cannot be deleted)</button>'}
+        </div>
+      </div>
+      <div class="role-stats">
+        <div class="role-stat on-track">
+          <div class="role-stat-value">${onTrack}</div>
+          <div class="role-stat-label">On Track</div>
+        </div>
+        <div class="role-stat at-risk">
+          <div class="role-stat-value">${atRisk}</div>
+          <div class="role-stat-label">At Risk</div>
+        </div>
+        <div class="role-stat off-track">
+          <div class="role-stat-value">${offTrack}</div>
+          <div class="role-stat-label">Off Track</div>
+        </div>
+      </div>
+    `;
+
+    // Wire up editing
+    document.querySelectorAll('[data-role-field]').forEach(el => {
+      el.addEventListener('blur', handleRoleFieldEdit);
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          el.blur();
+        }
+      });
+    });
+  }
+
+  function handleRoleFieldEdit(e) {
+    const el = e.target;
+    const field = el.dataset.roleField;
+    if (!field) return;
+    const role = data.roles.find(r => r.id === activeRole);
+    if (!role) return;
+    role[field] = el.textContent.trim();
+    saveData();
+    renderRoleTabs(); // refresh tab labels in case name changed
+  }
+
+  window.addRole = function() {
+    const id = 'role-' + Date.now();
+    data.roles.push({
+      id,
+      name: 'New Role',
+      desc: 'Describe what this role tracks — click to edit.'
+    });
+    activeRole = id;
+    saveData();
+    renderAll();
+  };
+
+  window.deleteRole = function(id) {
+    if (id === 'overall') return;
+    const role = data.roles.find(r => r.id === id);
+    if (!role) return;
+    const kpisInRole = data.kpis.filter(k => k.role === id);
+
+    let msg = `Delete role "${role.name}"?`;
+    if (kpisInRole.length > 0) {
+      msg = `Role "${role.name}" has ${kpisInRole.length} KPI${kpisInRole.length === 1 ? '' : 's'}.\n\nClick OK to delete the role and move its KPIs to Overall School.\nClick Cancel to keep things as they are.`;
+    }
+    if (!confirm(msg)) return;
+
+    if (kpisInRole.length > 0) {
+      data.kpis.forEach(k => { if (k.role === id) k.role = 'overall'; });
+    }
+    data.roles = data.roles.filter(r => r.id !== id);
+    activeRole = 'overall';
+    saveData();
+    renderAll();
+  };
+
+  function renderKpis() {
+    const grid = document.getElementById('kpiGrid');
+    const kpis = getKpisForRole(activeRole);
+
+    if (kpis.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <h3>No KPIs yet</h3>
+          <p>Add the first KPI to start tracking what matters for this role.</p>
+          <button class="add-kpi-btn" onclick="addKpi()">+ Add KPI</button>
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = kpis.map(k => renderKpiCard(k)).join('');
+  }
+
+  function renderKpiCard(kpi) {
+    const status = getStatus(kpi);
+    const statusText = status === 'on-track' ? 'On track' : status === 'at-risk' ? 'At risk' : 'Off track';
+    const latest = kpi.values[kpi.values.length - 1];
+    const trend = getTrend(kpi);
+    const trendC = trendClass(kpi);
+    const trendArrow = trend.direction === 'up' ? '↑' : trend.direction === 'down' ? '↓' : '→';
+    const firstWeek = kpi.values[0]?.w || '';
+    const lastWeek = latest?.w || '';
+
+    return `
+      <div class="kpi-card ${status}" onclick="openKpi('${kpi.id}')">
+        <button class="delete-card" onclick="event.stopPropagation(); deleteKpi('${kpi.id}')">✕</button>
+        <div class="kpi-top">
+          <div class="kpi-name">${escapeHtml(kpi.name)}</div>
+          <div class="kpi-owner">
+            <div class="avatar col-${kpi.ownerColor || 1}">${initialsOf(kpi.owner)}</div>
+          </div>
+        </div>
+        <div class="kpi-value-row">
+          <div class="kpi-value">${formatValue(latest?.v ?? '—', kpi.unit)}</div>
+          <div class="kpi-trend ${trendC}">${trendArrow} ${trend.pct}%</div>
+        </div>
+        <div class="kpi-target-row">
+          <span>Target ${formatValue(kpi.target, kpi.unit)} ${kpi.direction === 'above' ? '↗' : '↘'}</span>
+          <span class="kpi-status-pill ${status}"><span class="dot"></span>${statusText}</span>
+        </div>
+        <div class="sparkline-wrap">
+          ${renderSparkline(kpi)}
+          <div class="sparkline-label"><span>${firstWeek}</span><span>${lastWeek}</span></div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderAll() {
+    renderRoleTabs();
+    renderRoleSummary();
+    renderKpis();
+  }
+
+  // === DRAWER ===
+  function openKpi(id) {
+    const kpi = data.kpis.find(k => k.id === id);
+    if (!kpi) return;
+    currentEdit = id;
+    renderDrawer(kpi);
+    document.getElementById('overlay').classList.add('open');
+    document.getElementById('drawer').classList.add('open');
+  }
+
+  function closeDrawer() {
+    document.getElementById('overlay').classList.remove('open');
+    document.getElementById('drawer').classList.remove('open');
+    currentEdit = null;
+  }
+
+  function getCurrentKpi() { return data.kpis.find(k => k.id === currentEdit); }
+
+  function renderDrawer(kpi) {
+    const role = data.roles.find(r => r.id === kpi.role);
+    document.getElementById('drawerTag').textContent = `KPI · ${role?.name || ''}`;
+
+    const body = document.getElementById('drawerBody');
+    body.innerHTML = `
+      <h2 class="drawer-title" contenteditable="true" data-field="name" data-placeholder="KPI name">${escapeHtml(kpi.name)}</h2>
+
+      <div class="form-grid">
+        <div class="form-field">
+          <span class="field-label">Owner</span>
+          <input class="field-input" data-field="owner" value="${escapeHtml(kpi.owner)}" placeholder="Owner name">
+        </div>
+        <div class="form-field">
+          <span class="field-label">Role</span>
+          <select class="field-input" data-field="role">
+            ${data.roles.map(r => `<option value="${r.id}" ${kpi.role === r.id ? 'selected' : ''}>${escapeHtml(r.name)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-field">
+          <span class="field-label">Target</span>
+          <input class="field-input" data-field="target" type="number" step="any" value="${kpi.target}">
+        </div>
+        <div class="form-field">
+          <span class="field-label">Unit</span>
+          <select class="field-input" data-field="unit">
+            <option value="" ${kpi.unit===''?'selected':''}>None (number)</option>
+            <option value="%" ${kpi.unit==='%'?'selected':''}>Percent (%)</option>
+            <option value="€" ${kpi.unit==='€'?'selected':''}>Euro (€)</option>
+            <option value="/wk" ${kpi.unit==='/wk'?'selected':''}>Per week (/wk)</option>
+            <option value="/mo" ${kpi.unit==='/mo'?'selected':''}>Per month (/mo)</option>
+            <option value="/10" ${kpi.unit==='/10'?'selected':''}>Out of 10 (/10)</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <span class="field-label">Direction</span>
+          <select class="field-input" data-field="direction">
+            <option value="above" ${kpi.direction==='above'?'selected':''}>Higher is better (↗)</option>
+            <option value="below" ${kpi.direction==='below'?'selected':''}>Lower is better (↘)</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <span class="field-label">Chart Type</span>
+          <select class="field-input" data-field="chartType">
+            <option value="line" ${(kpi.chartType || 'line')==='line'?'selected':''}>Line (with dots)</option>
+            <option value="bar" ${kpi.chartType==='bar'?'selected':''}>Vertical bars</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <span class="field-label">Avatar Color</span>
+          <select class="field-input" data-field="ownerColor">
+            <option value="1" ${kpi.ownerColor==1?'selected':''}>Blue</option>
+            <option value="2" ${kpi.ownerColor==2?'selected':''}>Red</option>
+            <option value="3" ${kpi.ownerColor==3?'selected':''}>Green</option>
+            <option value="4" ${kpi.ownerColor==4?'selected':''}>Gold</option>
+            <option value="5" ${kpi.ownerColor==5?'selected':''}>Purple</option>
+            <option value="6" ${kpi.ownerColor==6?'selected':''}>Teal</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="drawer-section">
+        <div class="drawer-section-header">
+          <div class="drawer-section-title">Trend</div>
+        </div>
+        <div class="chart-wrap">
+          ${renderSparkline(kpi, true)}
+        </div>
+      </div>
+
+      <div class="drawer-section">
+        <div class="drawer-section-header">
+          <div class="drawer-section-title">Weekly values</div>
+          <button class="add-btn" onclick="addWeek()">+ Add week</button>
+        </div>
+        <div class="history-table">
+          <div class="history-row header">
+            <div>Week</div>
+            <div>Value</div>
+            <div></div>
+          </div>
+          ${kpi.values.map((v, i) => `
+            <div class="history-row">
+              <input class="history-value" data-week-index="${i}" data-week-field="w" value="${escapeHtml(v.w)}" style="background: transparent; border: none; padding: 0; font-weight: 600;">
+              <input class="history-value" data-week-index="${i}" data-week-field="v" type="number" step="any" value="${v.v}">
+              <button class="delete-row" onclick="removeWeek(${i})">✕</button>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    body.querySelectorAll('[contenteditable="true"]').forEach(el => {
+      el.addEventListener('blur', handleContentEdit);
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); el.blur(); }
+      });
+    });
+
+    body.querySelectorAll('.field-input').forEach(el => {
+      el.addEventListener('change', handleFieldChange);
+      el.addEventListener('blur', handleFieldChange);
+    });
+
+    body.querySelectorAll('.history-value').forEach(el => {
+      el.addEventListener('change', handleWeekChange);
+      el.addEventListener('blur', handleWeekChange);
+    });
+
+    document.getElementById('drawerDelete').onclick = () => {
+      if (!confirm('Delete this KPI?')) return;
+      deleteKpi(currentEdit);
+      closeDrawer();
+    };
+  }
+
+  function handleContentEdit(e) {
+    const el = e.target;
+    const kpi = getCurrentKpi();
+    if (!kpi) return;
+    const field = el.dataset.field;
+    if (field) {
+      kpi[field] = el.textContent.trim();
+      saveData();
+      renderAll();
+    }
+  }
+
+  function handleFieldChange(e) {
+    const el = e.target;
+    const kpi = getCurrentKpi();
+    if (!kpi) return;
+    const field = el.dataset.field;
+    if (!field) return;
+
+    let val = el.value;
+    if (field === 'target' || field === 'ownerColor') val = parseFloat(val) || 0;
+    kpi[field] = val;
+
+    saveData();
+    renderAll();
+    renderDrawer(kpi);
+  }
+
+  function handleWeekChange(e) {
+    const el = e.target;
+    const kpi = getCurrentKpi();
+    if (!kpi) return;
+    const i = parseInt(el.dataset.weekIndex);
+    const f = el.dataset.weekField;
+    let val = el.value;
+    if (f === 'v') val = parseFloat(val) || 0;
+    kpi.values[i][f] = val;
+    saveData();
+    renderAll();
+    renderDrawer(kpi);
+  }
+
+  function addWeek() {
+    const kpi = getCurrentKpi();
+    if (!kpi) return;
+    const last = kpi.values[kpi.values.length - 1];
+    let nextWeek = 'W' + (kpi.values.length + 17);
+    if (last && last.w.startsWith('W')) {
+      const n = parseInt(last.w.slice(1));
+      if (!isNaN(n)) nextWeek = 'W' + (n + 1);
+    }
+    kpi.values.push({ w: nextWeek, v: last?.v || 0 });
+    saveData();
+    renderAll();
+    renderDrawer(kpi);
+  }
+
+  function removeWeek(i) {
+    const kpi = getCurrentKpi();
+    if (!kpi) return;
+    kpi.values.splice(i, 1);
+    saveData();
+    renderAll();
+    renderDrawer(kpi);
+  }
+
+  function addKpi() {
+    const newId = 'k' + Date.now();
+    const newKpi = {
+      id: newId,
+      role: activeRole,
+      name: 'New KPI',
+      owner: 'Sebastien G.',
+      ownerColor: 2,
+      unit: '',
+      target: 100,
+      direction: 'above',
+      values: WEEKS.map(w => ({ w, v: 0 }))
+    };
+    data.kpis.push(newKpi);
+    saveData();
+    renderAll();
+    openKpi(newId);
+  }
+
+  function deleteKpi(id) {
+    if (!confirm('Delete this KPI?')) return;
+    data.kpis = data.kpis.filter(k => k.id !== id);
+    saveData();
+    renderAll();
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeDrawer();
+  });
+
+  // === CHART TOOLTIP HOVER ===
+  const tooltipEl = document.getElementById('chartTooltip');
+
+  function showChartTooltip(el, e) {
+    const w = el.getAttribute('data-tip-w');
+    const v = parseFloat(el.getAttribute('data-tip-v'));
+    const target = parseFloat(el.getAttribute('data-tip-target'));
+    const unit = el.getAttribute('data-tip-unit') || '';
+    const direction = el.getAttribute('data-tip-direction');
+
+    const hit = direction === 'above' ? v >= target : v <= target;
+    const diff = v - target;
+    const diffStr = (diff >= 0 ? '+' : '') + formatValue(Math.abs(diff) * (diff >= 0 ? 1 : -1), unit);
+
+    tooltipEl.innerHTML = `
+      <div class="tip-week">${escapeHtml(w)}</div>
+      <div class="tip-value">${formatValue(v, unit)}</div>
+      <div class="tip-target">
+        Target ${formatValue(target, unit)}
+        <span class="tip-badge ${hit ? 'hit' : 'miss'}">${hit ? '✓ HIT' : '✗ MISS'}</span>
+      </div>
+    `;
+    tooltipEl.classList.add('show');
+    positionChartTooltip(e);
+  }
+
+  function positionChartTooltip(e) {
+    const x = e.clientX;
+    const y = e.clientY;
+    const rect = tooltipEl.getBoundingClientRect();
+    let left = x + 14;
+    let top = y - rect.height - 10;
+    // Flip if off-screen right
+    if (left + rect.width > window.innerWidth - 8) {
+      left = x - rect.width - 14;
+    }
+    if (top < 8) top = y + 14;
+    tooltipEl.style.left = left + 'px';
+    tooltipEl.style.top = top + 'px';
+  }
+
+  function hideChartTooltip() {
+    tooltipEl.classList.remove('show');
+  }
+
+  document.addEventListener('mouseover', e => {
+    const target = e.target;
+    if (target && target.getAttribute && target.getAttribute('data-tip-w') !== null) {
+      showChartTooltip(target, e);
+    }
+  });
+  document.addEventListener('mouseout', e => {
+    const target = e.target;
+    if (target && target.getAttribute && target.getAttribute('data-tip-w') !== null) {
+      hideChartTooltip();
+    }
+  });
+  document.addEventListener('mousemove', e => {
+    if (tooltipEl.classList.contains('show')) positionChartTooltip(e);
+  });
+
+  renderAll();
+</script>
+
+</body>
+</html>

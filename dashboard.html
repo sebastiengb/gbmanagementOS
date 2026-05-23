@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GB Platform — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gb-red: #C8102E;
+    --gb-red-soft: #FCE8EC;
+    --gb-dark: #1A1A1A;
+    --text: #2D2D2D;
+    --text-soft: #6B6B6B;
+    --text-faint: #9B9B9B;
+    --bg: #FAFAF8;
+    --card: #FFFFFF;
+    --border: #ECECE8;
+    --accent: #D4A857;
+    --green: #4A8F5E;
+    --green-soft: #E8F4EC;
+    --amber: #D97706;
+    --amber-soft: #FEF3E2;
+    --blue: #2563EB;
+    --blue-soft: #DBEAFE;
+    --purple: #6B46C1;
+    --purple-soft: #EDE9FE;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,0.10);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .app { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+  /* === SIDEBAR === */
+  .sidebar {
+    background: #FFFFFF;
+    border-right: 1px solid var(--border);
+    padding: 28px 16px;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    padding: 0 12px 32px; border-bottom: 1px solid var(--border); margin-bottom: 24px;
+  }
+  .logo-mark { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-mark img { width: 100%; height: 100%; display: block; object-fit: contain; }
+  .logo-text { font-weight: 700; font-size: 15px; letter-spacing: -0.3px; }
+  .logo-text span { color: var(--text-faint); font-weight: 400; }
+
+  .nav-section {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-faint); padding: 16px 12px 8px; font-weight: 600;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px; border-radius: 8px;
+    color: var(--text-soft); cursor: pointer;
+    font-size: 14px; font-weight: 500; transition: all 0.15s;
+  }
+  .nav-item:hover { background: var(--bg); color: var(--text); }
+  .nav-item.active { background: var(--gb-red-soft); color: var(--gb-red); font-weight: 600; }
+  .nav-item .icon { font-size: 16px; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .nav-item .icon svg { width: 18px; height: 18px; }
+
+  /* === MAIN === */
+  .main {
+    padding: 40px 56px 80px;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  /* === GREETING / QUOTE === */
+  .greeting-card {
+    background: linear-gradient(135deg, #1A1A1A 0%, #2C2C2C 100%);
+    color: white;
+    border-radius: 18px;
+    padding: 40px 44px;
+    position: relative;
+    overflow: hidden;
+  }
+  .greeting-card::after {
+    content: '';
+    position: absolute;
+    top: -50%; right: -10%;
+    width: 50%; height: 200%;
+    background: radial-gradient(circle, rgba(212,168,87,0.18), transparent 70%);
+    pointer-events: none;
+  }
+  .greeting-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 28px;
+    position: relative;
+    z-index: 1;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .greeting-hello {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.6px;
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+  .greeting-date {
+    font-size: 14px;
+    color: rgba(255,255,255,0.55);
+    font-weight: 500;
+  }
+  .greeting-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: white;
+    padding: 7px 13px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .chip:hover { background: rgba(255,255,255,0.18); }
+  .chip strong { font-weight: 700; font-size: 13px; }
+  .chip .chip-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .chip-dot.red { background: var(--gb-red); }
+  .chip-dot.amber { background: var(--accent); }
+  .chip-dot.green { background: #6EE7A6; }
+
+  .quote-block {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 24px;
+  }
+  .quote-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .quote-text {
+    font-family: 'Lora', Georgia, serif;
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.45;
+    color: white;
+    font-weight: 500;
+    margin-bottom: 12px;
+    max-width: 720px;
+    letter-spacing: -0.2px;
+  }
+  .quote-author {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .quote-author::before {
+    content: '';
+    width: 24px; height: 1px;
+    background: rgba(255,255,255,0.3);
+  }
+  .quote-refresh {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: white;
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.15s;
+    margin-left: auto;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .quote-refresh:hover { background: rgba(255,255,255,0.18); transform: rotate(90deg); }
+
+  /* === SECTION === */
+  .section {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 28px;
+  }
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  .section-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-faint);
+    font-weight: 600;
+  }
+  .section-meta {
+    font-size: 13px;
+    color: var(--text-soft);
+    font-weight: 500;
+  }
+  .view-all-link {
+    font-size: 12px;
+    color: var(--gb-red);
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.15s;
+  }
+  .view-all-link:hover { opacity: 0.7; }
+
+  /* === ROCKS LIST === */
+  .rock-list { display: flex; flex-direction: column; gap: 4px; }
+  .rock-row {
+    display: grid;
+    grid-template-columns: 1fr 180px 60px 110px;
+    gap: 16px;
+    align-items: center;
+    padding: 12px 0;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .rock-row + .rock-row { border-top: 1px solid var(--border); }
+  .rock-row:hover { opacity: 0.7; }
+  .rock-row.done { opacity: 0.55; }
+  .rock-row.done .rock-title { text-decoration: line-through; color: var(--text-soft); }
+  .rock-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gb-dark);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .rock-progress-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .rock-progress-fill {
+    height: 100%;
+    border-radius: 3px;
+  }
+  .rock-progress-fill.on-track { background: var(--green); }
+  .rock-progress-fill.at-risk { background: var(--amber); }
+  .rock-progress-fill.off-track { background: var(--gb-red); }
+  .rock-progress-fill.done { background: var(--text-soft); }
+  .rock-progress-pct {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    text-align: right;
+    font-feature-settings: "tnum";
+  }
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    width: fit-content;
+  }
+  .status-pill .dot { width: 5px; height: 5px; border-radius: 50%; }
+  .status-pill.on-track { background: var(--green-soft); color: var(--green); }
+  .status-pill.on-track .dot { background: var(--green); }
+  .status-pill.at-risk { background: var(--amber-soft); color: var(--amber); }
+  .status-pill.at-risk .dot { background: var(--amber); }
+  .status-pill.off-track { background: var(--gb-red-soft); color: var(--gb-red); }
+  .status-pill.off-track .dot { background: var(--gb-red); }
+  .status-pill.done { background: var(--bg); color: var(--text-soft); border: 1px solid var(--border); }
+  .status-pill.done .dot { background: var(--text-soft); }
+
+  .rocks-summary {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+  .rocks-summary span strong { color: var(--text); font-weight: 700; }
+
+  /* === TO-DOS === */
+  .todo-list { display: flex; flex-direction: column; gap: 4px; }
+  .todo-row {
+    display: grid;
+    grid-template-columns: 24px 1fr 110px 100px;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 0;
+    transition: opacity 0.15s;
+  }
+  .todo-row + .todo-row { border-top: 1px solid var(--border); }
+  .todo-row.done .todo-title { text-decoration: line-through; color: var(--text-faint); }
+  .todo-row.done { opacity: 0.55; }
+  .todo-check {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: white;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .todo-check:hover { border-color: var(--green); }
+  .todo-check.done { background: var(--green); border-color: var(--green); }
+  .todo-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .todo-title:hover { color: var(--gb-red); }
+  .todo-status {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    width: fit-content;
+  }
+  .todo-status.not-started { background: var(--bg); color: var(--text-soft); border: 1px solid var(--border); }
+  .todo-status.in-progress { background: var(--blue-soft); color: var(--blue); }
+  .todo-status.blocked { background: var(--gb-red-soft); color: var(--gb-red); }
+  .todo-due {
+    font-size: 12px;
+    color: var(--text-soft);
+    font-weight: 500;
+    font-feature-settings: "tnum";
+    text-align: right;
+  }
+  .todo-due.overdue { color: var(--gb-red); font-weight: 700; }
+  .todo-due.soon { color: var(--amber); font-weight: 600; }
+
+  /* === KPI GRID === */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+  .kpi-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 180px;
+  }
+  .kpi-card:hover {
+    border-color: var(--text-soft);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .kpi-card.on-track { border-top: 3px solid var(--green); }
+  .kpi-card.at-risk { border-top: 3px solid var(--amber); }
+  .kpi-card.off-track { border-top: 3px solid var(--gb-red); }
+  .kpi-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-soft);
+    line-height: 1.3;
+  }
+  .kpi-value {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    color: var(--gb-dark);
+    line-height: 1;
+  }
+  .kpi-value .unit {
+    font-size: 14px;
+    color: var(--text-faint);
+    font-weight: 500;
+  }
+  .kpi-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-soft);
+  }
+  .kpi-trend {
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 5px;
+  }
+  .kpi-trend.up-good, .kpi-trend.down-good { background: var(--green-soft); color: var(--green); }
+  .kpi-trend.up-bad, .kpi-trend.down-bad { background: var(--gb-red-soft); color: var(--gb-red); }
+  .kpi-trend.flat { background: var(--bg); color: var(--text-soft); }
+  .kpi-sparkline {
+    margin-top: auto;
+    height: 38px;
+  }
+
+  /* === ISSUES === */
+  .issue-list { display: flex; flex-direction: column; gap: 4px; }
+  .issue-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 130px 100px;
+    gap: 14px;
+    align-items: center;
+    padding: 12px 0;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .issue-row + .issue-row { border-top: 1px solid var(--border); }
+  .issue-row:hover { opacity: 0.7; }
+  .priority-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 12px;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    width: fit-content;
+  }
+  .priority-pill .dot { width: 5px; height: 5px; border-radius: 50%; }
+  .priority-pill.critical { background: var(--gb-red); color: white; }
+  .priority-pill.critical .dot { background: white; }
+  .priority-pill.high { background: var(--gb-red-soft); color: var(--gb-red); }
+  .priority-pill.high .dot { background: var(--gb-red); }
+  .priority-pill.medium { background: var(--amber-soft); color: var(--amber); }
+  .priority-pill.medium .dot { background: var(--amber); }
+  .priority-pill.low { background: var(--bg); color: var(--text-soft); border: 1px solid var(--border); }
+  .priority-pill.low .dot { background: var(--text-soft); }
+  .issue-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gb-dark);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .issue-category {
+    font-size: 11px;
+    color: var(--text-soft);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* === VISION CARD === */
+  .vision-card {
+    background: linear-gradient(135deg, #1A1A1A 0%, #2C2C2C 100%);
+    color: white;
+    border-radius: 18px;
+    padding: 36px 40px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .vision-card:hover { transform: translateY(-2px); }
+  .vision-card::after {
+    content: '';
+    position: absolute;
+    top: -50%; right: -10%;
+    width: 50%; height: 200%;
+    background: radial-gradient(circle, rgba(212,168,87,0.18), transparent 70%);
+  }
+  .vision-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 14px;
+    position: relative; z-index: 1;
+  }
+  .vision-statement {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: white;
+    letter-spacing: -0.4px;
+    margin-bottom: 20px;
+    max-width: 720px;
+    position: relative; z-index: 1;
+  }
+  .vision-meta {
+    display: flex; gap: 26px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    position: relative; z-index: 1;
+  }
+  .vision-meta strong { color: white; font-weight: 700; font-size: 15px; }
+
+  /* === EMPTY STATES === */
+  .empty {
+    padding: 30px 20px;
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 13px;
+    background: var(--bg);
+    border-radius: 10px;
+  }
+
+  /* === SVG sparkline === */
+  .sparkline {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+</style>
+<link rel="stylesheet" href="responsive.css">
+<script src="responsive.js" defer></script>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark"><img src="gracie-barra-logo.png.png" alt="Gracie Barra"></div>
+      <div class="logo-text">Management <span>OS</span></div>
+    </div>
+
+    <div class="nav-section">School</div>
+    <div class="nav-item active"><span class="icon">◐</span> Dashboard</div>
+    <div class="nav-item" onclick="location.href='vision.html'"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="15" r="4"/><circle cx="18" cy="15" r="4"/><path d="M6 11V7m12 4V7M8 7h8"/><path d="M10 15h4"/></svg></span> Vision</div>
+    <div class="nav-item" onclick="location.href='rocks.html'"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg></span> Rocks</div>
+    <div class="nav-item" onclick="location.href='metrics.html'"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14a10 10 0 0 1 20 0"/><path d="M12 14l5-3"/><circle cx="12" cy="14" r="1.5" fill="currentColor"/></svg></span> Metrics</div>
+    <div class="nav-item" onclick="location.href='todos.html'"><span class="icon">◯</span> To-Dos</div>
+    <div class="nav-item" onclick="location.href='issues.html'"><span class="icon">!</span> Issues</div>
+
+    <div class="nav-section">Knowledge</div>
+    <div class="nav-item" onclick="location.href='sops.html'"><span class="icon">▤</span> SOPs Hub</div>
+    <div class="nav-item" onclick="location.href='swot.html'"><span class="icon">▥</span> SWOT Analysis</div>
+
+    <div class="nav-section">Rhythm</div>
+    <div class="nav-item" onclick="location.href='meetings.html'"><span class="icon">▶</span> Meetings</div>
+    <div class="nav-item"><span class="icon">★</span> Headlines</div>
+
+    <div class="nav-section">Account</div>
+    <div class="nav-item" onclick="location.href=&#39;settings.html&#39;"><span class="icon">⚙</span> Settings</div>
+  </aside>
+
+  <main class="main">
+    <!-- GREETING -->
+    <section class="greeting-card">
+      <div class="greeting-top">
+        <div>
+          <div class="greeting-hello" id="greetingHello">Good morning, Sebastien</div>
+          <div class="greeting-date" id="greetingDate"></div>
+        </div>
+        <div class="greeting-chips" id="greetingChips"></div>
+      </div>
+      <div class="quote-block">
+        <div class="quote-label" style="display:flex; align-items:center; justify-content:space-between;">
+          <span>Reflection for today</span>
+          <button class="quote-refresh" onclick="nextQuote()" title="Show another quote">↻</button>
+        </div>
+        <div class="quote-text" id="quoteText"></div>
+        <div class="quote-author" id="quoteAuthor"></div>
+      </div>
+    </section>
+
+    <!-- CURRENT ROCKS -->
+    <section class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Current Rocks · <span id="rocksQuarter"></span></div>
+          <div class="rocks-summary" id="rocksSummary" style="margin-top: 6px;"></div>
+        </div>
+        <a class="view-all-link" href="rocks.html">View all Rocks →</a>
+      </div>
+      <div id="rocksList"></div>
+    </section>
+
+    <!-- TOP TO-DOS -->
+    <section class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">My Focus · Top 5 To-Dos</div>
+          <div class="section-meta" id="todosMeta" style="margin-top: 6px;"></div>
+        </div>
+        <a class="view-all-link" href="todos.html">View all To-Dos →</a>
+      </div>
+      <div id="todosList"></div>
+    </section>
+
+    <!-- KEY METRICS -->
+    <section class="section">
+      <div class="section-header">
+        <div class="section-title">Key Metrics — School Pulse</div>
+        <a class="view-all-link" href="metrics.html">View all Metrics →</a>
+      </div>
+      <div class="kpi-grid" id="kpiGrid"></div>
+    </section>
+
+    <!-- TOP ISSUES -->
+    <section class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Top Issues · By Priority</div>
+          <div class="section-meta" id="issuesMeta" style="margin-top: 6px;"></div>
+        </div>
+        <a class="view-all-link" href="issues.html">View all Issues →</a>
+      </div>
+      <div id="issuesList"></div>
+    </section>
+
+    <!-- VISION TOUCHSTONE -->
+    <section class="vision-card" onclick="location.href='vision.html'">
+      <div class="vision-label" id="visionLabel">The Long Game</div>
+      <div class="vision-statement" id="visionStatement"></div>
+      <div class="vision-meta" id="visionMeta"></div>
+    </section>
+  </main>
+</div>
+
+<script>
+  // ============================================================
+  // QUOTES — Carlos Gracie Jr. + Gracie Barra philosophy
+  // Edit this array to add your own real quotes from your archive.
+  // ============================================================
+  const QUOTES = [
+    { text: "We need to believe we have the power to change the world through Jiu-Jitsu.", author: "Grand Master Carlos Gracie Jr." },
+    { text: "Jiu-Jitsu for everyone.", author: "Grand Master Carlos Gracie Jr." },
+    { text: "Organized for the brotherhood.", author: "Gracie Barra philosophy" },
+    { text: "On the mat we are all equal — there is no rank for character.", author: "Gracie Barra philosophy" },
+    { text: "The black belt is a white belt who never stopped showing up.", author: "Jiu-Jitsu wisdom" },
+    { text: "Leave your ego at the door of the academy.", author: "Gracie Barra philosophy" },
+    { text: "Discipline is the bridge between the school you have and the school you want.", author: "Leadership wisdom" },
+    { text: "A great academy is not built in a day — it is built every day.", author: "Gracie Barra philosophy" },
+    { text: "Lead by example, on the mat and off it.", author: "Gracie Barra philosophy" }
+  ];
+
+  // ============================================================
+  // STORAGE KEYS — pull data from the other modules
+  // ============================================================
+  const ROCKS_KEY = 'gb_rocks_data_v1';
+  const TODOS_KEY = 'gb_todos_data_v1';
+  const METRICS_KEY = 'gb_metrics_data_v1';
+  const ISSUES_KEY = 'gb_issues_data_v1';
+  const VISION_KEY = 'gb_vision_data_v1';
+  const DASH_KEY = 'gb_dashboard_state_v1';
+
+  const ME = 'Sebastien G.';
+
+  // ============================================================
+  // HELPERS
+  // ============================================================
+  function escapeHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  }
+  function loadFromStorage(key) {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+  function saveTodos(td) { localStorage.setItem(TODOS_KEY, JSON.stringify(td)); }
+
+  function formatValue(v, unit) {
+    if (v === null || v === undefined) return '—';
+    if (unit === '€') return '€' + Number(v).toLocaleString();
+    if (unit === '%') return v + '%';
+    if (unit === '') return Number(v).toLocaleString();
+    return v + ' ' + unit;
+  }
+
+  function dayOfYear() {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 0);
+    return Math.floor((now - start) / 86400000);
+  }
+
+  function getCurrentQuarter() {
+    const now = new Date();
+    const m = now.getMonth();
+    const q = m < 3 ? 'Q1' : m < 6 ? 'Q2' : m < 9 ? 'Q3' : 'Q4';
+    return { quarter: q, year: now.getFullYear() };
+  }
+
+  // ============================================================
+  // GREETING
+  // ============================================================
+  function renderGreeting() {
+    const now = new Date();
+    const hour = now.getHours();
+    const greet = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+    document.getElementById('greetingHello').textContent = `${greet}, Sebastien`;
+    document.getElementById('greetingDate').textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
+    // Quick chips: open to-dos for me, top issues, next meeting
+    const todos = (loadFromStorage(TODOS_KEY)?.todos) || [];
+    const myOpenTodos = todos.filter(t => t.owner === ME && t.status !== 'done').length;
+    const issues = (loadFromStorage(ISSUES_KEY)?.issues) || [];
+    const criticalIssues = issues.filter(i => (i.status === 'open' || i.status === 'discussing') && (i.priority === 'critical' || i.priority === 'high')).length;
+
+    document.getElementById('greetingChips').innerHTML = `
+      <a class="chip" href="todos.html" style="text-decoration:none;"><span class="chip-dot amber"></span><strong>${myOpenTodos}</strong> to-dos owned by me</a>
+      <a class="chip" href="issues.html" style="text-decoration:none;"><span class="chip-dot red"></span><strong>${criticalIssues}</strong> high-priority issues</a>
+      <a class="chip" href="meetings.html" style="text-decoration:none;"><span class="chip-dot green"></span>Next L10 · Tuesday</a>
+    `;
+  }
+
+  // ============================================================
+  // QUOTES
+  // ============================================================
+  let quoteIndex = 0;
+  function renderQuote() {
+    const q = QUOTES[quoteIndex % QUOTES.length];
+    document.getElementById('quoteText').textContent = `"${q.text}"`;
+    document.getElementById('quoteAuthor').innerHTML = q.author;
+  }
+  window.nextQuote = function() {
+    quoteIndex = (quoteIndex + 1) % QUOTES.length;
+    renderQuote();
+  };
+
+  // Always start at the first quote on page load.
+  // The refresh button cycles through the rest in-memory (no persistence).
+  function initQuoteIndex() {
+    quoteIndex = 0;
+    // Clear any old saved state from previous version
+    localStorage.removeItem(DASH_KEY);
+  }
+
+  // ============================================================
+  // ROCKS
+  // ============================================================
+  function renderRocks() {
+    const rocksData = loadFromStorage(ROCKS_KEY);
+    const { quarter, year } = getCurrentQuarter();
+    document.getElementById('rocksQuarter').textContent = `${quarter} ${year}`;
+
+    const all = rocksData?.rocks || [];
+    const current = all.filter(r => r.quarter === quarter && r.year === year);
+
+    // Summary
+    const onTrack = current.filter(r => r.status === 'on-track').length;
+    const atRisk = current.filter(r => r.status === 'at-risk').length;
+    const offTrack = current.filter(r => r.status === 'off-track').length;
+    const done = current.filter(r => r.status === 'done').length;
+    document.getElementById('rocksSummary').innerHTML = `
+      <span><strong>${onTrack}</strong> on track</span>
+      <span><strong>${atRisk}</strong> at risk</span>
+      <span><strong>${offTrack}</strong> off track</span>
+      ${done > 0 ? `<span><strong>${done}</strong> done</span>` : ''}
+    `;
+
+    if (current.length === 0) {
+      document.getElementById('rocksList').innerHTML = `<div class="empty">No rocks for ${quarter} ${year}. <a href="rocks.html" style="color:var(--gb-red); font-weight:600;">Add one</a> to start tracking.</div>`;
+      return;
+    }
+
+    // Sort: at-risk and off-track first, then on-track, then done
+    const order = { 'at-risk': 0, 'off-track': 1, 'on-track': 2, 'done': 3 };
+    const sorted = [...current].sort((a, b) => (order[a.status] ?? 99) - (order[b.status] ?? 99));
+
+    document.getElementById('rocksList').innerHTML = `
+      <div class="rock-list">
+        ${sorted.map(r => {
+          const statusText = r.status === 'on-track' ? 'On Track' : r.status === 'at-risk' ? 'At Risk' : r.status === 'off-track' ? 'Off Track' : 'Done';
+          return `
+            <div class="rock-row ${r.status === 'done' ? 'done' : ''}" onclick="location.href='rocks.html'">
+              <div class="rock-title" title="${escapeHtml(r.title)}">${escapeHtml(r.title)}</div>
+              <div class="rock-progress-bar"><div class="rock-progress-fill ${r.status}" style="width: ${r.progress}%"></div></div>
+              <div class="rock-progress-pct">${r.progress}%</div>
+              <div class="status-pill ${r.status}"><span class="dot"></span>${statusText}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  // ============================================================
+  // TO-DOS
+  // ============================================================
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+  function dueDateClass(iso, status) {
+    if (!iso || status === 'done') return '';
+    const today = new Date(); today.setHours(0,0,0,0);
+    const d = new Date(iso); d.setHours(0,0,0,0);
+    const diffDays = Math.round((d - today) / (1000*60*60*24));
+    if (diffDays < 0) return 'overdue';
+    if (diffDays <= 2) return 'soon';
+    return '';
+  }
+
+  function renderTodos() {
+    const todosData = loadFromStorage(TODOS_KEY);
+    const all = todosData?.todos || [];
+
+    // My open to-dos, sorted by due date ascending (overdue first)
+    const mine = all
+      .filter(t => t.owner === ME && t.status !== 'done')
+      .sort((a, b) => {
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return new Date(a.dueDate) - new Date(b.dueDate);
+      })
+      .slice(0, 5);
+
+    const totalOpen = all.filter(t => t.owner === ME && t.status !== 'done').length;
+    const overdueCount = all.filter(t => {
+      if (t.owner !== ME || t.status === 'done' || !t.dueDate) return false;
+      const d = new Date(t.dueDate);
+      const today = new Date(); today.setHours(0,0,0,0); d.setHours(0,0,0,0);
+      return d < today;
+    }).length;
+
+    document.getElementById('todosMeta').innerHTML = `
+      <strong style="color:var(--text);">${totalOpen}</strong> open${overdueCount > 0 ? ` · <strong style="color:var(--gb-red);">${overdueCount} overdue</strong>` : ''}
+    `;
+
+    if (mine.length === 0) {
+      document.getElementById('todosList').innerHTML = `<div class="empty">All clear. No open to-dos owned by you. ✓</div>`;
+      return;
+    }
+
+    document.getElementById('todosList').innerHTML = `
+      <div class="todo-list">
+        ${mine.map(t => {
+          const statusText = t.status === 'not-started' ? 'Not Started' : t.status === 'in-progress' ? 'In Progress' : t.status === 'blocked' ? 'Blocked' : t.status;
+          const dueClass = dueDateClass(t.dueDate, t.status);
+          return `
+            <div class="todo-row ${t.status === 'done' ? 'done' : ''}">
+              <div class="todo-check ${t.status === 'done' ? 'done' : ''}" onclick="toggleTodo('${t.id}')">${t.status === 'done' ? '✓' : ''}</div>
+              <div class="todo-title" title="${escapeHtml(t.title)}" onclick="location.href='todos.html'">${escapeHtml(t.title)}</div>
+              <div class="todo-status ${t.status}">${statusText}</div>
+              <div class="todo-due ${dueClass}">${fmtDate(t.dueDate)}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  window.toggleTodo = function(id) {
+    const td = loadFromStorage(TODOS_KEY) || { todos: [] };
+    const t = (td.todos || []).find(x => x.id === id);
+    if (!t) return;
+    t.status = t.status === 'done' ? 'not-started' : 'done';
+    saveTodos(td);
+    renderTodos();
+    renderGreeting(); // refresh chip count
+  };
+
+  // ============================================================
+  // KEY METRICS
+  // ============================================================
+  function getKpiStatus(k) {
+    const latest = k.values?.[k.values.length - 1]?.v;
+    if (latest === undefined || latest === null) return 'off-track';
+    if (k.direction === 'above') {
+      if (latest >= k.target) return 'on-track';
+      if (latest >= k.target * 0.85) return 'at-risk';
+      return 'off-track';
+    } else {
+      if (latest <= k.target) return 'on-track';
+      if (latest <= k.target * 1.15) return 'at-risk';
+      return 'off-track';
+    }
+  }
+  function getTrend(k) {
+    const v = k.values;
+    if (!v || v.length < 2) return { pct: 0, direction: 'flat' };
+    const last = v[v.length - 1].v;
+    const prev = v[v.length - 2].v;
+    if (prev === 0) return { pct: 0, direction: 'flat' };
+    const pct = ((last - prev) / Math.abs(prev)) * 100;
+    let direction = 'flat';
+    if (pct > 1) direction = 'up';
+    else if (pct < -1) direction = 'down';
+    return { pct: Math.abs(pct).toFixed(1), direction };
+  }
+  function trendClass(k) {
+    const t = getTrend(k);
+    if (t.direction === 'flat') return 'flat';
+    const goingUp = t.direction === 'up';
+    const aboveGood = k.direction === 'above';
+    const isGood = (goingUp && aboveGood) || (!goingUp && !aboveGood);
+    if (isGood) return goingUp ? 'up-good' : 'down-good';
+    return goingUp ? 'up-bad' : 'down-bad';
+  }
+  function getValueColor(k, val) {
+    if (k.direction === 'above') return val >= k.target ? '#4A8F5E' : '#C8102E';
+    return val <= k.target ? '#4A8F5E' : '#C8102E';
+  }
+
+  function renderSparkline(k) {
+    const w = 260, h = 38, padding = 5;
+    const values = k.values?.map(v => v.v) || [];
+    if (values.length === 0) return '';
+    const min = Math.min(...values, k.target);
+    const max = Math.max(...values, k.target);
+    const pad = (max - min) * 0.1 || 1;
+    const yMin = min - pad, yMax = max + pad;
+    const yRange = yMax - yMin || 1;
+    const stepX = (w - padding * 2) / Math.max(values.length - 1, 1);
+    const points = values.map((v, i) => {
+      const x = padding + i * stepX;
+      const y = padding + (1 - (v - yMin) / yRange) * (h - padding * 2);
+      return [x, y];
+    });
+    const targetY = padding + (1 - (k.target - yMin) / yRange) * (h - padding * 2);
+    const linePath = points.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+    let svg = `<svg class="sparkline" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">`;
+    svg += `<line x1="${padding}" y1="${targetY.toFixed(1)}" x2="${w-padding}" y2="${targetY.toFixed(1)}" stroke="#9B9B9B" stroke-width="1" stroke-dasharray="2,2"/>`;
+    svg += `<path d="${linePath}" fill="none" stroke="#6B6B6B" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" opacity="0.35"/>`;
+    points.forEach((p, i) => {
+      svg += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.8" fill="${getValueColor(k, values[i])}" stroke="white" stroke-width="1.3"/>`;
+    });
+    svg += '</svg>';
+    return svg;
+  }
+
+  function renderKpis() {
+    const metricsData = loadFromStorage(METRICS_KEY);
+    const kpis = metricsData?.kpis || [];
+    // Pick 4 KPIs from "overall" role
+    const overall = kpis.filter(k => k.role === 'overall');
+    const pick = ['Active members', 'Monthly revenue', 'Class attendance avg', 'Member churn rate'];
+    const featured = pick.map(name => overall.find(k => k.name === name)).filter(Boolean);
+    // Fallback: first 4 overall KPIs
+    const final = featured.length === 4 ? featured : overall.slice(0, 4);
+
+    if (final.length === 0) {
+      document.getElementById('kpiGrid').innerHTML = `<div class="empty" style="grid-column: 1 / -1;">No metrics yet. <a href="metrics.html" style="color:var(--gb-red); font-weight:600;">Set up Metrics →</a></div>`;
+      return;
+    }
+
+    document.getElementById('kpiGrid').innerHTML = final.map(k => {
+      const status = getKpiStatus(k);
+      const trend = getTrend(k);
+      const trendC = trendClass(k);
+      const arrow = trend.direction === 'up' ? '↑' : trend.direction === 'down' ? '↓' : '→';
+      const latest = k.values?.[k.values.length - 1]?.v;
+      return `
+        <div class="kpi-card ${status}" onclick="location.href='metrics.html'">
+          <div class="kpi-name">${escapeHtml(k.name)}</div>
+          <div class="kpi-value">${formatValue(latest, k.unit)}</div>
+          <div class="kpi-meta">
+            <span>Target ${formatValue(k.target, k.unit)}</span>
+            <span class="kpi-trend ${trendC}">${arrow} ${trend.pct}%</span>
+          </div>
+          <div class="kpi-sparkline">${renderSparkline(k)}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ============================================================
+  // ISSUES
+  // ============================================================
+  function renderIssues() {
+    const issuesData = loadFromStorage(ISSUES_KEY);
+    const all = issuesData?.issues || [];
+    const active = all.filter(i => i.status === 'open' || i.status === 'discussing');
+    const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+    const top3 = [...active]
+      .sort((a, b) => (priorityOrder[a.priority] ?? 99) - (priorityOrder[b.priority] ?? 99))
+      .slice(0, 3);
+
+    const openCount = all.filter(i => i.status === 'open').length;
+    const discussCount = all.filter(i => i.status === 'discussing').length;
+    document.getElementById('issuesMeta').innerHTML = `
+      <strong style="color:var(--text);">${openCount}</strong> open · <strong style="color:var(--text);">${discussCount}</strong> discussing
+    `;
+
+    if (top3.length === 0) {
+      document.getElementById('issuesList').innerHTML = `<div class="empty">No active issues. ✓</div>`;
+      return;
+    }
+
+    document.getElementById('issuesList').innerHTML = `
+      <div class="issue-list">
+        ${top3.map(i => {
+          const priorityText = i.priority.charAt(0).toUpperCase() + i.priority.slice(1);
+          const statusText = i.status === 'open' ? 'Open' : 'Discussing';
+          return `
+            <div class="issue-row" onclick="location.href='issues.html'">
+              <div class="priority-pill ${i.priority}"><span class="dot"></span>${priorityText}</div>
+              <div class="issue-title" title="${escapeHtml(i.title)}">${escapeHtml(i.title)}</div>
+              <div class="issue-category">${escapeHtml(i.category)} · ${escapeHtml(i.owner)}</div>
+              <div class="status-pill ${i.status}"><span class="dot"></span>${statusText}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  // ============================================================
+  // VISION
+  // ============================================================
+  function renderVision() {
+    const visionData = loadFromStorage(VISION_KEY);
+    const ten = visionData?.ten;
+    if (!ten) {
+      document.getElementById('visionLabel').textContent = 'Our 10-Year Big Goal';
+      document.getElementById('visionStatement').textContent = 'Define your school\'s 10-year big goal in the Vision page.';
+      document.getElementById('visionMeta').innerHTML = '';
+      return;
+    }
+    const yearStr = ten.year ? ` · ${ten.year}` : '';
+    document.getElementById('visionLabel').textContent = `Our 10-Year Big Goal${yearStr}`;
+    document.getElementById('visionStatement').textContent = ten.title || '';
+    const stats = ten.stats || [];
+    document.getElementById('visionMeta').innerHTML = stats.slice(0, 3).map(s => `<div><strong>${escapeHtml(s.value)}</strong> ${escapeHtml(s.label)}</div>`).join('');
+  }
+
+  // ============================================================
+  // CROSS-TAB SYNC
+  // ============================================================
+  window.addEventListener('storage', e => {
+    if (e.key === TODOS_KEY) { renderTodos(); renderGreeting(); }
+    if (e.key === ROCKS_KEY) renderRocks();
+    if (e.key === METRICS_KEY) renderKpis();
+    if (e.key === ISSUES_KEY) { renderIssues(); renderGreeting(); }
+    if (e.key === VISION_KEY) renderVision();
+  });
+
+  // ============================================================
+  // INIT
+  // ============================================================
+  initQuoteIndex();
+  renderGreeting();
+  renderQuote();
+  renderRocks();
+  renderTodos();
+  renderKpis();
+  renderIssues();
+  renderVision();
+</script>
+
+</body>
+</html>

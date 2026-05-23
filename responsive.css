@@ -1,0 +1,290 @@
+/* ============================================================
+   GB Management OS — Responsive layer
+   Shared across all pages. Loaded after each page's own styles.
+   ============================================================ */
+
+/* === MOBILE NAV TOGGLE (injected by responsive.js) === */
+.mobile-nav-toggle {
+  display: none;
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  width: 44px;
+  height: 44px;
+  background: #1A1A1A;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 95;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.22);
+  font-family: inherit;
+}
+.mobile-nav-toggle:active { transform: scale(0.96); }
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 88;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.sidebar-overlay.open { opacity: 1; }
+
+/* === TABLET (max 1024px) === */
+@media (max-width: 1024px) {
+  .main { padding: 36px 36px 60px !important; }
+  /* Stat grids tighten */
+  .stats-bar { grid-template-columns: repeat(2, 1fr) !important; }
+  /* Past meetings rows compress */
+  .past-row {
+    grid-template-columns: 90px 1fr 80px 70px 80px 28px !important;
+    gap: 12px !important;
+  }
+}
+
+/* === MOBILE (max 768px) === */
+@media (max-width: 768px) {
+  /* App layout — sidebar becomes drawer */
+  .app { grid-template-columns: 1fr !important; }
+
+  .sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 260px !important;
+    height: 100vh !important;
+    z-index: 90;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 8px 0 30px rgba(0,0,0,0.2);
+    overflow-y: auto;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay.open { display: block; }
+  .mobile-nav-toggle { display: flex; }
+
+  /* Main content */
+  .main {
+    padding: 76px 18px 60px !important;
+    max-width: 100% !important;
+  }
+
+  /* Page header */
+  .page-title { font-size: 24px !important; }
+  .page-subtitle { font-size: 14px !important; }
+
+  /* Stats / summary strips → stack 2x2 */
+  .stats-bar,
+  .summary,
+  .role-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  .stat-card { padding: 14px !important; }
+  .stat-value, .summary-value { font-size: 22px !important; }
+
+  /* All form grids stack */
+  .form-grid,
+  .modal-row,
+  .drawer-stats,
+  .conclude-grid,
+  .pre-meeting-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .form-grid.full,
+  .form-grid > .form-field.full { grid-column: 1 / -1 !important; }
+
+  /* Kpi / templates / tools / items grids → 1 column */
+  .kpi-grid,
+  .templates-grid,
+  .tools-grid,
+  .items-grid,
+  .rocks-grid,
+  .sops-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Vision blocks padding */
+  .vision-block { padding: 22px !important; }
+  .ten-year-card { padding: 26px !important; }
+  .ten-year-statement { font-size: 20px !important; }
+
+  /* SOPs layout — tree on top, content below */
+  .sops-layout {
+    grid-template-columns: 1fr !important;
+  }
+  .tree-nav {
+    position: static !important;
+    max-height: 260px !important;
+  }
+
+  /* Meeting phase progress — wrap to 2 cols */
+  .phase-progress {
+    grid-auto-flow: row !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .phase-area {
+    grid-template-columns: 1fr !important;
+  }
+  .timer-panel { padding: 18px !important; }
+
+  /* Past meeting rows → stack */
+  .past-row {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    padding: 14px !important;
+  }
+  .past-row .past-name { grid-column: 1 / -1; }
+
+  /* Toolbars + filter pills wrap */
+  .toolbar { flex-wrap: wrap !important; gap: 10px !important; }
+  .filter-pills {
+    flex-wrap: wrap;
+    padding: 3px !important;
+  }
+  .filter-pill { padding: 7px 11px !important; font-size: 12px !important; }
+  .quarter-tabs { flex-wrap: wrap; }
+  .quarter-tab { padding: 7px 12px !important; font-size: 12px !important; }
+  .role-tab { padding: 10px 12px !important; font-size: 13px !important; }
+
+  /* Rock rows / issue rows / todo rows → stack into compact cards */
+  .rock-row,
+  .issue-row {
+    display: flex !important;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px !important;
+  }
+  .rock-row > *,
+  .issue-row > * { width: auto; }
+  .rock-row .delete-x, .issue-row .delete-x, .issue-row .solve-btn,
+  .issue-row .solve-btn-placeholder { align-self: flex-end; }
+  .rock-row .rock-title, .issue-row .issue-title { font-size: 14px !important; white-space: normal !important; }
+
+  .todo-row {
+    grid-template-columns: 26px 1fr auto !important;
+    gap: 8px !important;
+    flex-wrap: wrap;
+  }
+  .todo-row .todo-owner,
+  .todo-row .status-pill,
+  .todo-row .due-date { grid-column: span 3 !important; }
+
+  /* SOP cards */
+  .sop-card { padding: 18px !important; }
+
+  /* === DRAWER → full width on mobile === */
+  .drawer {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .drawer-header { padding: 18px 20px !important; }
+  .drawer-body { padding: 20px !important; }
+  .drawer-title { font-size: 19px !important; }
+
+  /* Modal */
+  .modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 22px !important;
+  }
+
+  /* Section panels */
+  .section { padding: 18px !important; }
+  .section-header { padding: 14px 16px !important; }
+
+  /* Dashboard greeting */
+  .greeting-card { padding: 26px !important; }
+  .greeting-hello { font-size: 22px !important; }
+  .quote-text { font-size: 17px !important; }
+
+  /* Hide table-only headers on mobile when content reflows to cards */
+  .list-header { display: none !important; }
+
+  /* Active meeting header — wrap */
+  .active-header { flex-wrap: wrap; gap: 12px; }
+  .active-title-wrap { flex-wrap: wrap; }
+  .active-title { font-size: 18px !important; }
+
+  /* Footer notes */
+  .footer-note { padding: 18px !important; }
+
+  /* Score circle in assessments */
+  .score-circle { width: 180px !important; height: 180px !important; }
+  .score-num { font-size: 50px !important; }
+
+  /* Breakdown rows in assessments */
+  .breakdown-row {
+    grid-template-columns: 1fr !important;
+    gap: 6px !important;
+  }
+  .breakdown-name { font-size: 12px !important; }
+
+  /* SWOT tool card */
+  .tool-card { min-height: auto !important; padding: 18px !important; }
+  .tool-name { font-size: 16px !important; }
+
+  /* Meeting templates */
+  .template-card { padding: 18px !important; }
+  .template-name { font-size: 16px !important; }
+  .duration-row { gap: 5px !important; }
+
+  /* Greeting chips wrap */
+  .greeting-chips { gap: 6px !important; }
+  .chip { padding: 6px 11px !important; font-size: 11px !important; }
+}
+
+/* === SMALL MOBILE (max 480px) === */
+@media (max-width: 480px) {
+  .main { padding: 72px 14px 50px !important; }
+  .page-title { font-size: 21px !important; letter-spacing: -0.5px !important; }
+  .page-subtitle { font-size: 13px !important; }
+
+  .stats-bar,
+  .summary {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+  .stat-value, .summary-value { font-size: 20px !important; }
+
+  /* Phase progress 1 column on smallest */
+  .phase-progress { grid-template-columns: 1fr !important; }
+
+  /* Templates / KPIs all single column */
+  .templates-grid,
+  .kpi-grid,
+  .tools-grid { gap: 12px !important; }
+
+  /* Section padding */
+  .vision-block { padding: 18px !important; }
+  .section { padding: 16px !important; }
+
+  /* Greeting */
+  .greeting-card { padding: 22px !important; border-radius: 14px !important; }
+  .greeting-hello { font-size: 19px !important; }
+  .quote-text { font-size: 15px !important; }
+
+  /* Score circle smaller */
+  .score-circle { width: 160px !important; height: 160px !important; }
+  .score-num { font-size: 44px !important; }
+
+  /* Belt tier text smaller */
+  .belt-tier { font-size: 13px !important; letter-spacing: 1.5px !important; padding: 8px 18px !important; }
+
+  /* Options grid */
+  .options {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Slider value width tighter */
+  .slider-value { min-width: 80px !important; font-size: 12px !important; }
+
+  /* Modal closer to viewport edges */
+  .modal { padding: 18px !important; border-radius: 12px !important; }
+}
