@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GB Platform — Coaching Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gb-red: #C8102E;
+    --gb-red-soft: #FCE8EC;
+    --gb-dark: #1A1A1A;
+    --text: #2D2D2D;
+    --text-soft: #6B6B6B;
+    --text-faint: #9B9B9B;
+    --bg: #FAFAF8;
+    --card: #FFFFFF;
+    --border: #ECECE8;
+    --accent: #D4A857;
+    --green: #4A8F5E;
+    --green-soft: #E8F4EC;
+    --amber: #D97706;
+    --amber-soft: #FEF3E2;
+    --blue: #2563EB;
+    --blue-soft: #DBEAFE;
+    --purple: #6B46C1;
+    --purple-soft: #EDE9FE;
+    --teal: #0F766E;
+    --teal-soft: #CCFBF1;
+    --gold-soft: #FEF3C7;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,0.10);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .app { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+  /* === SIDEBAR === */
+  .sidebar {
+    background: #FFFFFF;
+    border-right: 1px solid var(--border);
+    padding: 28px 16px;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    padding: 0 12px 32px; border-bottom: 1px solid var(--border); margin-bottom: 24px;
+  }
+  .logo-mark { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-mark img { width: 100%; height: 100%; display: block; object-fit: contain; }
+  .logo-text { font-weight: 700; font-size: 15px; letter-spacing: -0.3px; }
+  .logo-text span { color: var(--text-faint); font-weight: 400; }
+
+  .nav-section {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-faint); padding: 16px 12px 8px; font-weight: 600;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px; border-radius: 8px;
+    color: var(--text-soft); cursor: pointer;
+    font-size: 14px; font-weight: 500; transition: all 0.15s;
+  }
+  .nav-item:hover { background: var(--bg); color: var(--text); }
+  .nav-item.active { background: var(--gb-red-soft); color: var(--gb-red); font-weight: 600; }
+  .nav-item .icon { font-size: 16px; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .nav-item .icon svg { width: 18px; height: 18px; }
+
+  /* === MAIN === */
+  .main { padding: 40px 56px 80px; max-width: 1320px; }
+  .breadcrumb { font-size: 13px; color: var(--text-faint); margin-bottom: 12px; }
+  .breadcrumb span { color: var(--text); font-weight: 500; }
+  .page-header { margin-bottom: 28px; }
+  .page-title {
+    font-size: 32px; font-weight: 700; letter-spacing: -0.8px;
+    color: var(--gb-dark); margin-bottom: 6px;
+  }
+  .page-subtitle { font-size: 15px; color: var(--text-soft); max-width: 720px; }
+
+  /* === HERO BANNER === */
+  .hero {
+    background: linear-gradient(135deg, #1A1A1A 0%, #2C2C2C 100%);
+    color: white;
+    border-radius: 18px;
+    padding: 36px 40px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 28px;
+    align-items: center;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: -50%; right: -10%;
+    width: 50%; height: 200%;
+    background: radial-gradient(circle, rgba(212,168,87,0.2), transparent 70%);
+    pointer-events: none;
+  }
+  .hero-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 12px;
+    position: relative; z-index: 1;
+  }
+  .hero-title {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 10px;
+    line-height: 1.25;
+    position: relative; z-index: 1;
+    max-width: 540px;
+  }
+  .hero-text {
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+    max-width: 540px;
+    position: relative; z-index: 1;
+  }
+  .hero-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    position: relative;
+    z-index: 1;
+    text-align: right;
+  }
+  .hero-stat-val {
+    font-size: 24px; font-weight: 700; letter-spacing: -0.5px;
+  }
+  .hero-stat-lbl {
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+
+  /* === FILTERS === */
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .filter-pills {
+    display: flex;
+    gap: 4px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+  }
+  .filter-pill {
+    background: transparent;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-soft);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .filter-pill:hover { color: var(--text); }
+  .filter-pill.active { background: var(--gb-dark); color: white; }
+  .filter-pill .count { margin-left: 6px; opacity: 0.7; font-weight: 500; font-size: 11px; }
+
+  .search-input {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text);
+    outline: none;
+    min-width: 240px;
+    transition: all 0.15s;
+  }
+  .search-input:focus {
+    border-color: var(--gb-red);
+    box-shadow: 0 0 0 3px var(--gb-red-soft);
+  }
+
+  /* === CATEGORY SECTIONS === */
+  .category-section { margin-bottom: 38px; }
+  .category-section.hidden { display: none; }
+  .category-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .category-icon {
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .category-icon.getting-started { background: var(--blue-soft); color: var(--blue); }
+  .category-icon.operating-system { background: var(--gb-red-soft); color: var(--gb-red); }
+  .category-icon.meetings { background: var(--amber-soft); color: var(--amber); }
+  .category-icon.people { background: var(--green-soft); color: var(--green); }
+  .category-icon.strategy { background: var(--purple-soft); color: var(--purple); }
+  .category-icon.metrics { background: var(--teal-soft); color: var(--teal); }
+  .category-icon.workshops { background: var(--gold-soft); color: var(--amber); }
+
+  .category-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--gb-dark);
+    letter-spacing: -0.3px;
+  }
+  .category-meta {
+    font-size: 13px;
+    color: var(--text-soft);
+    margin-left: auto;
+  }
+
+  /* === TUTORIAL CARDS === */
+  .tutorial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+  }
+  .tutorial-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 200px;
+    position: relative;
+  }
+  .tutorial-card:hover {
+    border-color: var(--text-soft);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .tutorial-card.completed::after {
+    content: '✓';
+    position: absolute;
+    top: 14px; right: 14px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--green);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .tutorial-top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .type-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 12px;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .type-badge.video { background: var(--gb-red-soft); color: var(--gb-red); }
+  .type-badge.article { background: var(--blue-soft); color: var(--blue); }
+  .type-badge.workshop { background: var(--gold-soft); color: var(--amber); }
+  .type-icon { font-size: 18px; }
+
+  .tutorial-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--gb-dark);
+    letter-spacing: -0.2px;
+    line-height: 1.35;
+  }
+  .tutorial-desc {
+    font-size: 13px;
+    color: var(--text-soft);
+    line-height: 1.5;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .tutorial-bottom {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 4px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+  .duration-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-weight: 500;
+  }
+  .duration-badge::before {
+    content: '◷';
+    font-size: 13px;
+  }
+  .open-link {
+    color: var(--gb-red);
+    font-weight: 700;
+    font-size: 12px;
+  }
+
+  .empty {
+    grid-column: 1 / -1;
+    padding: 40px;
+    background: white;
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    text-align: center;
+    color: var(--text-soft);
+    font-size: 14px;
+  }
+
+  /* === DRAWER === */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s; z-index: 50;
+  }
+  .overlay.open { opacity: 1; pointer-events: all; }
+  .drawer {
+    position: fixed; top: 0; right: 0;
+    width: 640px; max-width: 96vw; height: 100vh;
+    background: white; box-shadow: var(--shadow-lg);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 51; display: flex; flex-direction: column;
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-header {
+    padding: 22px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .drawer-tag {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--text-faint); font-weight: 600;
+  }
+  .drawer-actions { display: flex; gap: 6px; }
+  .drawer-btn {
+    background: transparent; border: none;
+    padding: 8px 12px; border-radius: 8px;
+    cursor: pointer; font-size: 13px; color: var(--text-soft);
+    font-family: inherit;
+    display: flex; align-items: center; gap: 6px;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .drawer-btn:hover { background: var(--bg); color: var(--text); }
+  .drawer-btn.completed {
+    background: var(--green-soft);
+    color: var(--green);
+  }
+  .drawer-btn.close-x {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    justify-content: center; padding: 0;
+  }
+
+  .drawer-body { padding: 28px 32px; overflow-y: auto; flex: 1; }
+
+  .drawer-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--gb-dark);
+    margin-bottom: 14px;
+    line-height: 1.3;
+  }
+  .drawer-meta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .video-placeholder {
+    background: linear-gradient(135deg, #1A1A1A 0%, #2C2C2C 100%);
+    border-radius: 12px;
+    aspect-ratio: 16/9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: white;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .video-placeholder::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(212,168,87,0.15), transparent 70%);
+  }
+  .play-button {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: var(--gb-red);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    margin-bottom: 14px;
+    position: relative; z-index: 1;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .play-button:hover { transform: scale(1.1); }
+  .video-placeholder-text {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    position: relative; z-index: 1;
+  }
+
+  .content-section { margin-bottom: 22px; }
+  .content-section h3 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-faint);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .content-section p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .content-section ul, .content-section ol {
+    margin-left: 22px;
+    margin-bottom: 10px;
+  }
+  .content-section li {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .workshop-step {
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    display: grid;
+    grid-template-columns: 32px 1fr 70px;
+    gap: 12px;
+    align-items: start;
+  }
+  .step-num {
+    background: var(--gb-red);
+    color: white;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .step-content {
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .step-title { font-weight: 700; color: var(--gb-dark); margin-bottom: 2px; }
+  .step-desc { color: var(--text-soft); font-size: 13px; }
+  .step-time {
+    font-size: 11px;
+    color: var(--text-faint);
+    font-weight: 600;
+    text-align: right;
+    font-feature-settings: "tnum";
+  }
+
+  .coming-soon-banner {
+    background: var(--gold-soft);
+    border: 1px solid var(--accent);
+    color: #8B6914;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 600;
+  }
+</style>
+<link rel="stylesheet" href="responsive.css">
+<script src="responsive.js" defer></script>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark"><img src="gracie-barra-logo.png.png" alt="Gracie Barra"></div>
+      <div class="logo-text">Management <span>OS</span></div>
+    </div>
+
+    <div class="nav-section">School</div>
+    <div class="nav-item" onclick="location.href='dashboard.html'"><span class="icon">◐</span> Dashboard</div>
+    <div class="nav-item" onclick="location.href='vision.html'"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="15" r="4"/><circle cx="18" cy="15" r="4"/><path d="M6 11V7m12 4V7M8 7h8"/><path d="M10 15h4"/></svg></span> Vision</div>
+    <div class="nav-item" onclick="location.href='rocks.html'"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg></span> Rocks</div>
+    <div class="nav-item" onclick="location.href='metrics.html'"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14a10 10 0 0 1 20 0"/><path d="M12 14l5-3"/><circle cx="12" cy="14" r="1.5" fill="currentColor"/></svg></span> Metrics</div>
+    <div class="nav-item" onclick="location.href='todos.html'"><span class="icon">◯</span> To-Dos</div>
+    <div class="nav-item" onclick="location.href='issues.html'"><span class="icon">!</span> Issues</div>
+
+    <div class="nav-section">Knowledge</div>
+    <div class="nav-item" onclick="location.href='sops.html'"><span class="icon">▤</span> SOPs Hub</div>
+    <div class="nav-item active"><span class="icon">▥</span> Coaching Hub</div>
+    <div class="nav-item" onclick="location.href='swot.html'"><span class="icon">◰</span> SWOT Analysis</div>
+
+    <div class="nav-section">Rhythm</div>
+    <div class="nav-item" onclick="location.href='meetings.html'"><span class="icon">▶</span> Meetings</div>
+    <div class="nav-item"><span class="icon">★</span> Headlines</div>
+
+    <div class="nav-section">Account</div>
+    <div class="nav-item" onclick="location.href='settings.html'"><span class="icon">⚙</span> Settings</div>
+  </aside>
+
+  <main class="main">
+    <div class="breadcrumb">Knowledge <span>›</span> <span>Coaching Hub</span></div>
+    <div class="page-header">
+      <h1 class="page-title">Coaching Hub</h1>
+      <p class="page-subtitle">Tutorials, leadership workshops, and the playbook for running a great school. Learn the system, then teach it to your team.</p>
+    </div>
+
+    <section class="hero">
+      <div>
+        <div class="hero-label">Start Here</div>
+        <div class="hero-title">A school doesn't grow by accident. It grows by rhythm.</div>
+        <div class="hero-text">The platform is built on a proven operating system used by some of the strongest organizations in the world. These tutorials show you how to use it — and more importantly, how to think like a leader running a system.</div>
+      </div>
+      <div class="hero-stats">
+        <div><div class="hero-stat-val" id="totalTutorials">0</div><div class="hero-stat-lbl">Tutorials</div></div>
+        <div><div class="hero-stat-val" id="totalCompleted">0</div><div class="hero-stat-lbl">Completed</div></div>
+      </div>
+    </section>
+
+    <div class="toolbar">
+      <div class="filter-pills" id="filterPills"></div>
+      <input type="search" class="search-input" id="searchInput" placeholder="Search tutorials...">
+    </div>
+
+    <div id="categories"></div>
+  </main>
+</div>
+
+<!-- DRAWER -->
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div class="drawer-tag" id="drawerTag">Tutorial</div>
+    <div class="drawer-actions">
+      <button class="drawer-btn" id="completeBtn" onclick="toggleComplete()">Mark as completed</button>
+      <button class="drawer-btn close-x" onclick="closeDrawer()">✕</button>
+    </div>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</aside>
+
+<script>
+  const COMPLETED_KEY = 'gb_coaching_completed_v1';
+
+  // === CATEGORIES ===
+  const CATEGORIES = [
+    { id: 'getting-started',   name: 'Getting Started',          icon: '👋', desc: 'How to use the platform.' },
+    { id: 'operating-system',  name: 'The Operating System',     icon: '🏛', desc: 'How great schools run.' },
+    { id: 'meetings',          name: 'Meeting Cadence',          icon: '🗓', desc: 'The rhythm of leadership.' },
+    { id: 'people',            name: 'Right People, Right Seat', icon: '👥', desc: 'Building your team.' },
+    { id: 'strategy',          name: 'Strategy & Vision',        icon: '🎯', desc: 'Long-term thinking.' },
+    { id: 'metrics',           name: 'Metrics & Numbers',        icon: '📊', desc: 'Scorecards that drive growth.' },
+    { id: 'workshops',         name: 'Leadership Workshops',     icon: '🎴', desc: 'Facilitation kits — like Pip Decks for your school.' }
+  ];
+
+  // === TUTORIALS ===
+  const TUTORIALS = [
+    // GETTING STARTED
+    { id: 'g1', cat: 'getting-started', type: 'video', title: 'Welcome to your Management OS', duration: '4 min',
+      desc: 'A quick tour of the platform — what each module does and how they connect.',
+      content: {
+        sections: [
+          { h: 'What you\'ll learn', body: 'The 10,000-foot view of every module: Dashboard, Vision, Rocks, Metrics, To-Dos, Issues, Meetings, SOPs, and SWOT Tools.' },
+          { h: 'Why this matters', body: 'Most school owners run their business from their inbox. This platform replaces the inbox chaos with a structured rhythm — one place to think long-term, manage execution, and review performance.' }
+        ]
+      }
+    },
+    { id: 'g2', cat: 'getting-started', type: 'video', title: 'Setting up your first week', duration: '7 min',
+      desc: 'Add your team, write your first rock, run your first Weekly Tactical meeting.',
+      content: {
+        sections: [
+          { h: 'Step by step', body: 'In 30 minutes you\'ll have: a documented vision, 3 quarterly rocks, a baseline scorecard, your team invited, and your first weekly meeting scheduled.' }
+        ]
+      }
+    },
+    { id: 'g3', cat: 'getting-started', type: 'article', title: 'How to read your Dashboard', duration: '3 min',
+      desc: 'Every morning, 30 seconds of clarity. Here\'s what each card on your Dashboard tells you.' },
+    { id: 'g4', cat: 'getting-started', type: 'article', title: 'Inviting your team & setting permissions', duration: '5 min',
+      desc: 'Roles, permissions, and how to onboard your Head Coach, Front Desk, and Assistant Coaches.' },
+
+    // OPERATING SYSTEM
+    { id: 'os1', cat: 'operating-system', type: 'video', title: 'The 6 components of a great school', duration: '12 min',
+      desc: 'Vision, People, Data, Issues, Process, Traction. The framework underneath everything.',
+      content: {
+        sections: [
+          { h: 'The six lenses', body: 'Strong schools are strong in six areas. Weakness in any one of them shows up as friction, churn, or a stalled growth.' },
+          { h: 'How to score yourself', body: 'After watching, run the SWOT assessments on Proshop, Financial Health, and others to get a baseline.' }
+        ]
+      }
+    },
+    { id: 'os2', cat: 'operating-system', type: 'video', title: 'The Vision Pyramid', duration: '9 min',
+      desc: '10-year goal → 3-5 year picture → 1-year goals → 90-day rocks. Why every layer matters.' },
+    { id: 'os3', cat: 'operating-system', type: 'article', title: 'Why most schools plateau at 200 members', duration: '6 min',
+      desc: 'The owner becomes the bottleneck. Here\'s the operating shift that lets the school scale past it.' },
+    { id: 'os4', cat: 'operating-system', type: 'video', title: 'Owner vs. Operator: knowing the difference', duration: '8 min',
+      desc: 'You can\'t teach Jiu-Jitsu, manage the front desk, and set 5-year strategy all in the same week. Choose your seat.' },
+
+    // MEETING CADENCE
+    { id: 'm1', cat: 'meetings', type: 'video', title: 'The Weekly Tactical Meeting', duration: '10 min',
+      desc: 'Why 90 minutes a week beats hours of unstructured time. The 7-step agenda explained.',
+      content: {
+        sections: [
+          { h: 'The structure', body: 'Check-In → Rock Review → Scorecard → Headlines → To-Dos → Issues (IDS) → Conclude. Every phase is on a timer.' },
+          { h: 'The discipline', body: 'Same day, same time, every week. Cancel the meeting and the operating system collapses within a quarter.' }
+        ]
+      }
+    },
+    { id: 'm2', cat: 'meetings', type: 'video', title: 'The Monthly Strategic Performance', duration: '7 min',
+      desc: 'Once a month, step back. Look at trends, adjust direction, reset focus.' },
+    { id: 'm3', cat: 'meetings', type: 'video', title: 'The Quarterly Basecamp', duration: '12 min',
+      desc: 'Close the quarter, set the next. The pivot point where strategy meets execution.' },
+    { id: 'm4', cat: 'meetings', type: 'video', title: 'The Annual Planning Meeting', duration: '15 min',
+      desc: 'Once a year, refresh the vision and set the direction for the next 12 months.' },
+    { id: 'm5', cat: 'meetings', type: 'article', title: 'How to run an effective check-in', duration: '4 min',
+      desc: 'The 5-minute opening that sets the tone for the next 85 minutes.' },
+    { id: 'm6', cat: 'meetings', type: 'article', title: 'IDS — Identify, Discuss, Solve', duration: '6 min',
+      desc: 'The method for working issues. Stop circling problems and start solving them.' },
+
+    // PEOPLE
+    { id: 'p1', cat: 'people', type: 'video', title: 'Right People, Right Seat', duration: '11 min',
+      desc: 'The two questions you have to answer about every team member.',
+      content: {
+        sections: [
+          { h: 'The two questions', body: '1) Do they share our values? (Right Person)  2) Do they Get it, Want it, and have the Capacity to do it? (Right Seat)' },
+          { h: 'What to do when the answer is no', body: 'Most owners avoid the conversation for 6-12 months too long. This is how to have it sooner and with care.' }
+        ]
+      }
+    },
+    { id: 'p2', cat: 'people', type: 'video', title: 'Building your accountability chart', duration: '14 min',
+      desc: 'The organizational structure every school needs. Who owns what, who reports to whom.' },
+    { id: 'p3', cat: 'people', type: 'article', title: 'Hiring for character first', duration: '7 min',
+      desc: 'Skills can be taught. Character is who they are when no one is watching.' },
+    { id: 'p4', cat: 'people', type: 'video', title: 'The hardest conversation: parting ways', duration: '9 min',
+      desc: 'When someone has to go. How to handle it with respect for them and for the team.' },
+    { id: 'p5', cat: 'people', type: 'article', title: 'Coach the player you have, then upgrade', duration: '5 min',
+      desc: 'The fair process before letting anyone go: clear expectations, coaching, time to improve.' },
+
+    // STRATEGY
+    { id: 's1', cat: 'strategy', type: 'video', title: 'Setting a 10-year vision', duration: '12 min',
+      desc: 'Why the long view changes your daily decisions. How to write one that actually pulls you forward.' },
+    { id: 's2', cat: 'strategy', type: 'video', title: 'The 3-5 year picture', duration: '9 min',
+      desc: 'Closer than the vision, further than the year. The bridge that makes the dream concrete.' },
+    { id: 's3', cat: 'strategy', type: 'article', title: 'Annual goals that survive contact with reality', duration: '6 min',
+      desc: 'Most yearly goals are ignored by March. Here\'s how to write goals that drive a year.' },
+    { id: 's4', cat: 'strategy', type: 'video', title: 'Cascading goals down to every role', duration: '8 min',
+      desc: 'The vision means nothing if your assistant coach doesn\'t know how their work connects to it.' },
+
+    // METRICS
+    { id: 'me1', cat: 'metrics', type: 'video', title: 'Pick the right KPIs', duration: '10 min',
+      desc: 'Lead vs lag indicators. Why measuring revenue alone is too late.',
+      content: {
+        sections: [
+          { h: 'Lead vs lag', body: 'Lag indicators tell you what happened (revenue, churn). Lead indicators predict what will happen (trial bookings, attendance trend, NPS).' },
+          { h: 'The 7-15 number rule', body: 'Pick 7-15 numbers that, if all are healthy, your school is healthy. Less than 7 and you\'re flying blind. More than 15 and you\'re drowning in noise.' }
+        ]
+      }
+    },
+    { id: 'me2', cat: 'metrics', type: 'article', title: 'Reading your scorecard each week', duration: '5 min',
+      desc: 'The 5-minute scorecard review that anchors every weekly meeting.' },
+    { id: 'me3', cat: 'metrics', type: 'video', title: 'Setting targets you can actually hit', duration: '8 min',
+      desc: 'How to set numerical targets that stretch without breaking the team.' },
+    { id: 'me4', cat: 'metrics', type: 'article', title: 'When a number stays red 3 weeks in a row', duration: '4 min',
+      desc: 'The exact escalation path: review the scorecard → become an issue → IDS → solve or pivot.' },
+
+    // WORKSHOPS
+    { id: 'w1', cat: 'workshops', type: 'workshop', title: 'Team Alignment Workshop', duration: '60 min',
+      desc: 'Get every team member on the same page about where the school is going.',
+      content: {
+        steps: [
+          { title: 'Opening: where are we going?', desc: 'Owner reads the 10-year vision aloud. Everyone writes one word that captures it.', time: '5 min' },
+          { title: 'Each person shares their word', desc: 'Round the room. Owner notes the patterns.', time: '10 min' },
+          { title: 'The 3-5 year picture', desc: 'Read the milestones. Each person rates 1-10 how clear they are.', time: '15 min' },
+          { title: 'The 90-day rocks', desc: 'Review current rocks. Each person commits to what they\'ll personally own.', time: '20 min' },
+          { title: 'Close: one thing I commit to', desc: 'Round the room. Each person makes one verbal commitment.', time: '10 min' }
+        ]
+      }
+    },
+    { id: 'w2', cat: 'workshops', type: 'workshop', title: 'Vision-Setting Workshop', duration: '90 min',
+      desc: 'A facilitated session to draft (or refresh) your school\'s 10-year vision with the team.' },
+    { id: 'w3', cat: 'workshops', type: 'workshop', title: 'Issue-Solving (IDS) Workshop', duration: '45 min',
+      desc: 'Train the team in the Identify-Discuss-Solve method with real issues from your scorecard.',
+      content: {
+        steps: [
+          { title: 'Frame the method', desc: 'Owner explains IDS in 5 min. Show one example.', time: '5 min' },
+          { title: 'Identify', desc: 'Each person names one issue from the past week. Write them on the board.', time: '10 min' },
+          { title: 'Prioritize', desc: 'Vote on the top 3 to discuss today.', time: '5 min' },
+          { title: 'Discuss & Solve', desc: 'Work through each of the 3 — 7-8 minutes each.', time: '25 min' }
+        ]
+      }
+    },
+    { id: 'w4', cat: 'workshops', type: 'workshop', title: 'Quarterly Rock-Setting Workshop', duration: '120 min',
+      desc: 'Half-day workshop to set the next 90 days of priorities with the leadership team.' },
+    { id: 'w5', cat: 'workshops', type: 'workshop', title: 'Right People, Right Seat Workshop', duration: '90 min',
+      desc: 'Privately or with co-owner: review every team member through the two-question lens.' }
+  ];
+
+  // === STATE ===
+  let activeFilter = 'all';
+  let searchQuery = '';
+  let completed = loadCompleted();
+
+  function loadCompleted() {
+    try {
+      const raw = localStorage.getItem(COMPLETED_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) { return {}; }
+  }
+  function saveCompleted() {
+    localStorage.setItem(COMPLETED_KEY, JSON.stringify(completed));
+  }
+
+  function escapeHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  }
+
+  // === FILTERS ===
+  function getFiltered() {
+    let list = TUTORIALS;
+    if (activeFilter !== 'all') list = list.filter(t => t.type === activeFilter);
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter(t =>
+        t.title.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }
+
+  function countByType(type) {
+    if (type === 'all') return TUTORIALS.length;
+    return TUTORIALS.filter(t => t.type === type).length;
+  }
+
+  // === RENDER ===
+  function renderHero() {
+    document.getElementById('totalTutorials').textContent = TUTORIALS.length;
+    const completedCount = Object.values(completed).filter(Boolean).length;
+    document.getElementById('totalCompleted').textContent = completedCount;
+  }
+
+  function renderFilters() {
+    const filters = [
+      { id: 'all', label: 'All' },
+      { id: 'video', label: 'Videos' },
+      { id: 'article', label: 'Articles' },
+      { id: 'workshop', label: 'Workshops' }
+    ];
+    document.getElementById('filterPills').innerHTML = filters.map(f => `
+      <button class="filter-pill ${activeFilter === f.id ? 'active' : ''}" onclick="setFilter('${f.id}')">
+        ${f.label}<span class="count">${countByType(f.id)}</span>
+      </button>
+    `).join('');
+  }
+
+  window.setFilter = (id) => {
+    activeFilter = id;
+    renderCategories();
+    renderFilters();
+  };
+
+  function renderCategories() {
+    const filtered = getFiltered();
+    const container = document.getElementById('categories');
+
+    if (filtered.length === 0) {
+      container.innerHTML = `<div class="empty">No tutorials match your filters. Try clearing the search or changing the filter.</div>`;
+      return;
+    }
+
+    container.innerHTML = CATEGORIES.map(cat => {
+      const items = filtered.filter(t => t.cat === cat.id);
+      if (items.length === 0) return '';
+      return `
+        <section class="category-section">
+          <div class="category-header">
+            <div class="category-icon ${cat.id}">${cat.icon}</div>
+            <div>
+              <div class="category-title">${escapeHtml(cat.name)}</div>
+            </div>
+            <div class="category-meta">${items.length} ${items.length === 1 ? 'tutorial' : 'tutorials'}</div>
+          </div>
+          <div class="tutorial-grid">
+            ${items.map(t => renderCard(t)).join('')}
+          </div>
+        </section>
+      `;
+    }).join('');
+  }
+
+  function renderCard(t) {
+    const isCompleted = !!completed[t.id];
+    const typeIcon = t.type === 'video' ? '▶' : t.type === 'article' ? '📄' : '🎴';
+    const typeLabel = t.type === 'video' ? 'Video' : t.type === 'article' ? 'Article' : 'Workshop';
+
+    return `
+      <div class="tutorial-card ${isCompleted ? 'completed' : ''}" onclick="openTutorial('${t.id}')">
+        <div class="tutorial-top">
+          <span class="type-icon">${typeIcon}</span>
+          <span class="type-badge ${t.type}">${typeLabel}</span>
+        </div>
+        <div class="tutorial-title">${escapeHtml(t.title)}</div>
+        <div class="tutorial-desc">${escapeHtml(t.desc)}</div>
+        <div class="tutorial-bottom">
+          <span class="duration-badge">${escapeHtml(t.duration)}</span>
+          <span class="open-link">Open →</span>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderAll() {
+    renderHero();
+    renderFilters();
+    renderCategories();
+  }
+
+  // === DRAWER ===
+  let currentTutorialId = null;
+
+  window.openTutorial = (id) => {
+    const t = TUTORIALS.find(x => x.id === id);
+    if (!t) return;
+    currentTutorialId = id;
+    renderDrawer(t);
+    document.getElementById('overlay').classList.add('open');
+    document.getElementById('drawer').classList.add('open');
+  };
+
+  window.closeDrawer = () => {
+    document.getElementById('overlay').classList.remove('open');
+    document.getElementById('drawer').classList.remove('open');
+    currentTutorialId = null;
+  };
+
+  function renderDrawer(t) {
+    const cat = CATEGORIES.find(c => c.id === t.cat);
+    const typeLabel = t.type === 'video' ? 'Video' : t.type === 'article' ? 'Article' : 'Workshop';
+    document.getElementById('drawerTag').textContent = `${typeLabel} · ${cat?.name || ''}`;
+
+    const isCompleted = !!completed[t.id];
+    const completeBtn = document.getElementById('completeBtn');
+    completeBtn.textContent = isCompleted ? '✓ Completed' : 'Mark as completed';
+    completeBtn.className = 'drawer-btn ' + (isCompleted ? 'completed' : '');
+
+    let bodyHtml = `
+      <h2 class="drawer-title">${escapeHtml(t.title)}</h2>
+      <div class="drawer-meta">
+        <span class="type-badge ${t.type}">${typeLabel}</span>
+        <span class="duration-badge">${escapeHtml(t.duration)}</span>
+      </div>
+    `;
+
+    if (t.type === 'video') {
+      bodyHtml += `
+        <div class="video-placeholder">
+          <div class="play-button">▶</div>
+          <div class="video-placeholder-text">Video coming soon — content will be embedded here</div>
+        </div>
+      `;
+    }
+
+    bodyHtml += `<div class="content-section"><p>${escapeHtml(t.desc)}</p></div>`;
+
+    if (t.content?.sections) {
+      t.content.sections.forEach(s => {
+        bodyHtml += `<div class="content-section"><h3>${escapeHtml(s.h)}</h3><p>${escapeHtml(s.body)}</p></div>`;
+      });
+    } else if (t.content?.steps) {
+      bodyHtml += `<div class="content-section"><h3>Workshop Steps</h3>`;
+      t.content.steps.forEach((s, i) => {
+        bodyHtml += `
+          <div class="workshop-step">
+            <div class="step-num">${i+1}</div>
+            <div class="step-content">
+              <div class="step-title">${escapeHtml(s.title)}</div>
+              <div class="step-desc">${escapeHtml(s.desc)}</div>
+            </div>
+            <div class="step-time">${escapeHtml(s.time)}</div>
+          </div>
+        `;
+      });
+      bodyHtml += `</div>`;
+    } else {
+      bodyHtml += `<div class="coming-soon-banner">Full content coming soon. The structure is here — the polished video/article/workshop will be added in the next release.</div>`;
+    }
+
+    document.getElementById('drawerBody').innerHTML = bodyHtml;
+  }
+
+  window.toggleComplete = () => {
+    if (!currentTutorialId) return;
+    completed[currentTutorialId] = !completed[currentTutorialId];
+    if (!completed[currentTutorialId]) delete completed[currentTutorialId];
+    saveCompleted();
+    const t = TUTORIALS.find(x => x.id === currentTutorialId);
+    if (t) renderDrawer(t);
+    renderAll();
+  };
+
+  // Search
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    searchQuery = e.target.value;
+    renderCategories();
+  });
+
+  // Escape closes drawer
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeDrawer();
+  });
+
+  renderAll();
+</script>
+
+</body>
+</html>
